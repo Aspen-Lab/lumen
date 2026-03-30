@@ -18,6 +18,13 @@ export interface ResultRevealProps {
   blurAmount?: number;
   revealDuration?: number;
   stagger?: number;
+  /* ── Color props ── */
+  accentColor?: string;
+  cardBgColor?: string;
+  headerColor?: string;
+  progressBarColor?: string;
+  textColor?: string;
+  sectionTitleColor?: string;
 }
 
 /* ── Default data ── */
@@ -52,6 +59,10 @@ function SectionCard({
   blurAmount,
   revealDuration,
   stagger,
+  accentColor,
+  cardBgColor,
+  sectionTitleColor,
+  textColor,
 }: {
   section: ResultSection;
   index: number;
@@ -59,6 +70,10 @@ function SectionCard({
   blurAmount: number;
   revealDuration: number;
   stagger: number;
+  accentColor: string;
+  cardBgColor: string;
+  sectionTitleColor: string;
+  textColor: string;
 }) {
   const delay = index * stagger;
 
@@ -72,26 +87,35 @@ function SectionCard({
       }
       transition={{ duration: revealDuration, delay, ease: [0.32, 0.72, 0, 1] }}
       className={cn(
-        "rounded-xl border bg-[#111113] px-5 py-4 transition-shadow duration-500",
+        "rounded-xl border px-5 py-4 transition-shadow duration-500",
         revealed
           ? "border-white/[0.09] shadow-[0_2px_20px_rgba(0,0,0,0.35)]"
           : "border-white/[0.04]"
       )}
+      style={{ backgroundColor: cardBgColor }}
     >
       {/* Section header */}
       <div className="flex items-center gap-2 mb-3">
         <motion.div
-          className="w-1 h-1 rounded-full bg-[#0BE09B]"
+          className="w-1 h-1 rounded-full"
+          style={{ backgroundColor: accentColor }}
           animate={revealed ? { opacity: 1, scale: 1 } : { opacity: 0.3, scale: 0.6 }}
           transition={{ duration: revealDuration * 0.6, delay: delay + revealDuration * 0.5 }}
         />
-        <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/35">
+        <span
+          className="text-[10px] font-semibold uppercase tracking-[0.1em]"
+          style={{ color: sectionTitleColor }}
+        >
           {section.title}
         </span>
 
         {/* Revealed indicator */}
         <motion.span
-          className="ml-auto text-[9px] font-mono uppercase tracking-wider text-[#0BE09B]/60 bg-[#0BE09B]/10 px-1.5 py-0.5 rounded"
+          className="ml-auto text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded"
+          style={{
+            color: `${accentColor}99`,
+            backgroundColor: `${accentColor}1a`,
+          }}
           initial={{ opacity: 0 }}
           animate={{ opacity: revealed ? 1 : 0 }}
           transition={{ duration: 0.3, delay: delay + revealDuration * 0.7 }}
@@ -101,7 +125,12 @@ function SectionCard({
       </div>
 
       {/* Content */}
-      <p className="text-[13px] leading-[1.72] text-white/70">{section.content}</p>
+      <p
+        className="text-[13px] leading-[1.72]"
+        style={{ color: textColor }}
+      >
+        {section.content}
+      </p>
     </motion.div>
   );
 }
@@ -113,6 +142,10 @@ function ScrollRevealCard(props: {
   blurAmount: number;
   revealDuration: number;
   stagger: number;
+  accentColor: string;
+  cardBgColor: string;
+  sectionTitleColor: string;
+  textColor: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
@@ -131,6 +164,12 @@ export function ResultReveal({
   blurAmount = 12,
   revealDuration = 0.8,
   stagger = 0.18,
+  accentColor = "#0BE09B",
+  cardBgColor = "#111113",
+  headerColor = "rgba(255,255,255,0.30)",
+  progressBarColor = "rgba(255,255,255,0.06)",
+  textColor = "rgba(255,255,255,0.70)",
+  sectionTitleColor = "rgba(255,255,255,0.35)",
 }: ResultRevealProps) {
   const clampedBlur = Math.max(0, Math.min(20, blurAmount));
   const clampedDuration = Math.max(0.3, Math.min(3, revealDuration));
@@ -183,29 +222,39 @@ export function ResultReveal({
       <div className="flex items-center gap-2.5 mb-5">
         <div className="flex items-center gap-2">
           <motion.div
-            className="w-1.5 h-1.5 rounded-full bg-[#0BE09B]"
+            className="w-1.5 h-1.5 rounded-full"
+            style={{ backgroundColor: accentColor }}
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           />
-          <span className="text-[10px] font-mono uppercase tracking-[0.12em] text-white/35">
+          <span
+            className="text-[10px] font-mono uppercase tracking-[0.12em]"
+            style={{ color: headerColor }}
+          >
             AI Result
           </span>
         </div>
 
         {/* Mode badge */}
-        <span className="px-2 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-wider border border-white/[0.08] text-white/30">
+        <span
+          className="px-2 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-wider border border-white/[0.08]"
+          style={{ color: headerColor }}
+        >
           {revealMode}
         </span>
 
         {/* Section counter (not shown for on-scroll) */}
         {revealMode !== "on-scroll" && (
-          <span className="ml-auto text-[11px] font-mono tabular-nums text-white/30">
+          <span
+            className="ml-auto text-[11px] font-mono tabular-nums"
+            style={{ color: headerColor }}
+          >
             <motion.span
               key={visibleCount}
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
-              className="text-[#0BE09B]/80"
+              style={{ color: `${accentColor}cc` }}
             >
               {visibleCount}
             </motion.span>
@@ -216,9 +265,13 @@ export function ResultReveal({
 
       {/* Progress bar (progressive + all-at-once only) */}
       {revealMode !== "on-scroll" && (
-        <div className="h-px rounded-full bg-white/[0.06] mb-5 overflow-hidden">
+        <div
+          className="h-px rounded-full mb-5 overflow-hidden"
+          style={{ backgroundColor: progressBarColor }}
+        >
           <motion.div
-            className="h-full rounded-full bg-[#0BE09B]/50"
+            className="h-full rounded-full"
+            style={{ backgroundColor: `${accentColor}80` }}
             initial={{ width: "0%" }}
             animate={{
               width: totalSections > 0 ? `${(visibleCount / totalSections) * 100}%` : "0%",
@@ -239,6 +292,10 @@ export function ResultReveal({
                 blurAmount={clampedBlur}
                 revealDuration={clampedDuration}
                 stagger={0} /* each card triggers independently */
+                accentColor={accentColor}
+                cardBgColor={cardBgColor}
+                sectionTitleColor={sectionTitleColor}
+                textColor={textColor}
               />
             ))
           : sections.map((section, i) => (
@@ -254,6 +311,10 @@ export function ResultReveal({
                 blurAmount={clampedBlur}
                 revealDuration={clampedDuration}
                 stagger={revealMode === "all-at-once" ? clampedStagger : 0}
+                accentColor={accentColor}
+                cardBgColor={cardBgColor}
+                sectionTitleColor={sectionTitleColor}
+                textColor={textColor}
               />
             ))}
       </div>

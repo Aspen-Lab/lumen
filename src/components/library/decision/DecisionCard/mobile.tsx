@@ -35,8 +35,8 @@ const urgencyConfig: Record<
 > = {
   low: {
     label: "Low urgency",
-    dot: "bg-accent-green",
-    badge: "bg-[rgba(11,224,155,0.08)] border-[rgba(11,224,155,0.18)] text-accent-green",
+    dot: "bg-[#0BE09B]",
+    badge: "bg-[rgba(11,224,155,0.08)] border-[rgba(11,224,155,0.18)] text-[#0BE09B]",
   },
   medium: {
     label: "Medium urgency",

@@ -17,6 +17,14 @@ export interface ProgressiveBlurRevealProps {
   blurEnd?: number;
   transitionCurve?: "ease" | "spring" | "linear";
   duration?: number;
+  /* ── Color props ── */
+  accentColor?: string;
+  cardBgColor?: string;
+  cardBgDimColor?: string;
+  titleColor?: string;
+  textColor?: string;
+  progressBarColor?: string;
+  buttonColor?: string;
 }
 
 /* ── Default sections ── */
@@ -44,6 +52,22 @@ const easingMap = {
   linear: [0, 0, 1, 1] as [number, number, number, number],
   spring: [0.34, 1.56, 0.64, 1] as [number, number, number, number],
 };
+
+/* ── Hex color → rgba helper ── */
+function hexToRgba(hex: string, alpha: number): string {
+  const sanitised = hex.replace("#", "");
+  const full =
+    sanitised.length === 3
+      ? sanitised
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : sanitised;
+  const r = parseInt(full.slice(0, 2), 16);
+  const g = parseInt(full.slice(2, 4), 16);
+  const b = parseInt(full.slice(4, 6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
 
 /* ── Eye icon ── */
 function EyeIcon({ revealed }: { revealed: boolean }) {
@@ -99,6 +123,11 @@ function SectionCard({
   transitionCurve,
   duration,
   onReveal,
+  accentColor,
+  cardBgColor,
+  cardBgDimColor,
+  titleColor,
+  textColor,
 }: {
   section: RevealSection;
   index: number;
@@ -109,6 +138,11 @@ function SectionCard({
   transitionCurve: "ease" | "spring" | "linear";
   duration: number;
   onReveal: () => void;
+  accentColor: string;
+  cardBgColor: string;
+  cardBgDimColor: string;
+  titleColor: string;
+  textColor: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
@@ -131,33 +165,34 @@ function SectionCard({
       transition={{ duration: 0.45, delay: index * 0.1, ease: "easeOut" }}
       className={cn(
         "relative rounded-xl border overflow-hidden transition-colors duration-200",
-        revealed
-          ? "border-white/[0.08] bg-[#111113]"
-          : "border-white/[0.05] bg-[#0D0D0F]",
-        isClickable &&
-          "cursor-pointer hover:border-white/[0.12] hover:bg-[#111113]"
+        isClickable && "cursor-pointer"
       )}
+      style={{
+        backgroundColor: revealed ? cardBgColor : cardBgDimColor,
+        borderColor: revealed
+          ? "rgba(255,255,255,0.08)"
+          : "rgba(255,255,255,0.05)",
+      }}
       onClick={isClickable ? onReveal : undefined}
       role={isClickable ? "button" : undefined}
       tabIndex={isClickable ? 0 : undefined}
       onKeyDown={
         isClickable
-          ? (e) => e.key === "Enter" || e.key === " " ? onReveal() : undefined
+          ? (e) =>
+              e.key === "Enter" || e.key === " " ? onReveal() : undefined
           : undefined
       }
     >
       {/* Index badge */}
       <div className="absolute top-4 right-4 flex items-center gap-2">
         {!revealed && revealTrigger === "click" && (
-          <span className="text-[10px] font-mono uppercase tracking-wider text-[--text-muted] bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/[0.06]">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-white/25 bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/[0.06]">
             click to reveal
           </span>
         )}
         <span
-          className={cn(
-            "text-[10px] font-mono tabular-nums transition-colors",
-            revealed ? "text-accent-green/60" : "text-[--text-muted]"
-          )}
+          className="text-[10px] font-mono tabular-nums transition-colors"
+          style={{ color: revealed ? accentColor : "var(--text-muted)" }}
         >
           {String(index + 1).padStart(2, "0")}
         </span>
@@ -168,18 +203,18 @@ function SectionCard({
         {/* Title row */}
         <div className="flex items-center gap-2 mb-3">
           <span
-            className={cn(
-              "transition-colors duration-300",
-              revealed ? "text-accent-green" : "text-[--text-tertiary]"
-            )}
+            className="transition-colors duration-300"
+            style={{
+              color: revealed ? accentColor : "var(--text-tertiary)",
+            }}
           >
             <EyeIcon revealed={revealed} />
           </span>
           <h3
-            className={cn(
-              "text-[13px] font-semibold tracking-tight transition-colors duration-300",
-              revealed ? "text-[--text-primary]" : "text-[--text-tertiary]"
-            )}
+            className="text-[13px] font-semibold tracking-tight transition-colors duration-300"
+            style={{
+              color: revealed ? titleColor : "var(--text-tertiary)",
+            }}
           >
             {section.title}
           </h3>
@@ -188,7 +223,8 @@ function SectionCard({
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className="ml-auto h-px flex-1 max-w-[60px] bg-accent-green/30 origin-left"
+              className="ml-auto h-px flex-1 max-w-[60px] origin-left"
+              style={{ backgroundColor: hexToRgba(accentColor, 0.3) }}
             />
           )}
         </div>
@@ -197,11 +233,11 @@ function SectionCard({
         <motion.p
           animate={{ filter: `blur(${currentBlur}px)` }}
           transition={{ duration, ease: easing }}
-          className={cn(
-            "text-[13px] leading-relaxed select-none",
-            revealed ? "text-[--text-secondary]" : "text-[--text-secondary]"
-          )}
-          style={{ userSelect: revealed ? "auto" : "none" }}
+          className="text-[13px] leading-relaxed select-none"
+          style={{
+            color: textColor,
+            userSelect: revealed ? "auto" : "none",
+          }}
         >
           {section.content}
         </motion.p>
@@ -209,7 +245,10 @@ function SectionCard({
 
       {/* Bottom accent line */}
       <motion.div
-        className="absolute bottom-0 left-0 h-[1.5px] bg-gradient-to-r from-accent-green/50 via-accent-green/20 to-transparent"
+        className="absolute bottom-0 left-0 h-[1.5px]"
+        style={{
+          background: `linear-gradient(to right, ${hexToRgba(accentColor, 0.5)}, ${hexToRgba(accentColor, 0.2)}, transparent)`,
+        }}
         initial={{ width: 0 }}
         animate={{ width: revealed ? "100%" : "0%" }}
         transition={{ duration: duration * 0.8, ease: easing }}
@@ -231,6 +270,13 @@ export function ProgressiveBlurReveal({
   blurEnd = 0,
   transitionCurve = "ease",
   duration = 0.7,
+  accentColor = "#0BE09B",
+  cardBgColor = "#111113",
+  cardBgDimColor = "#0D0D0F",
+  titleColor = "#ffffff",
+  textColor = "var(--text-secondary)",
+  progressBarColor = "#0BE09B",
+  buttonColor = "#0BE09B",
 }: ProgressiveBlurRevealProps) {
   const [revealedSet, setRevealedSet] = useState<Set<number>>(new Set());
 
@@ -272,19 +318,19 @@ export function ProgressiveBlurReveal({
       {/* Header */}
       <div className="flex items-center gap-2 mb-5">
         <div
-          className={cn(
-            "w-1.5 h-1.5 rounded-full transition-colors duration-500",
-            allRevealed
-              ? "bg-accent-green animate-pulse"
-              : "bg-white/20"
-          )}
+          className="w-1.5 h-1.5 rounded-full transition-colors duration-500"
+          style={{
+            backgroundColor: allRevealed
+              ? accentColor
+              : "rgba(255,255,255,0.2)",
+          }}
         />
-        <span className="text-[11px] font-mono uppercase tracking-[0.1em] text-[--text-tertiary]">
+        <span className="text-[11px] font-mono uppercase tracking-[0.1em] text-white/35">
           Progressive Reveal
         </span>
 
         {/* Progress counter */}
-        <span className="font-mono text-[11px] text-[--text-muted]">
+        <span className="font-mono text-[11px] text-white/25">
           {revealedSet.size}/{sections.length}
         </span>
 
@@ -292,7 +338,11 @@ export function ProgressiveBlurReveal({
         <div className="ml-auto flex items-center gap-2">
           {revealTrigger === "click" && !allRevealed && (
             <button
-              className="text-[11px] font-mono text-[--text-tertiary] hover:text-[--text-secondary] transition-colors px-2 py-1 rounded border border-white/[0.06] hover:border-white/[0.1]"
+              className="text-[11px] font-mono transition-colors px-2 py-1 rounded border"
+              style={{
+                color: buttonColor,
+                borderColor: hexToRgba(buttonColor, 0.2),
+              }}
               onClick={handleRevealAll}
             >
               reveal all
@@ -300,7 +350,7 @@ export function ProgressiveBlurReveal({
           )}
           {revealedSet.size > 0 && (
             <button
-              className="text-[11px] font-mono text-[--text-muted] hover:text-[--text-tertiary] transition-colors"
+              className="text-[11px] font-mono text-white/25 hover:text-white/35 transition-colors"
               onClick={handleReset}
             >
               reset
@@ -312,7 +362,8 @@ export function ProgressiveBlurReveal({
       {/* Progress bar */}
       <div className="h-[2px] rounded-full bg-white/[0.05] mb-5 overflow-hidden">
         <motion.div
-          className="h-full rounded-full bg-accent-green/50"
+          className="h-full rounded-full"
+          style={{ backgroundColor: hexToRgba(progressBarColor, 0.5) }}
           animate={{
             width:
               sections.length > 0
@@ -337,6 +388,11 @@ export function ProgressiveBlurReveal({
             transitionCurve={transitionCurve}
             duration={duration}
             onReveal={() => revealSection(i)}
+            accentColor={accentColor}
+            cardBgColor={cardBgColor}
+            cardBgDimColor={cardBgDimColor}
+            titleColor={titleColor}
+            textColor={textColor}
           />
         ))}
       </div>
@@ -347,13 +403,23 @@ export function ProgressiveBlurReveal({
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="mt-4 flex items-center gap-2 px-4 py-2.5 rounded-lg border border-accent-green/20 bg-[rgba(11,224,155,0.04)]"
+          className="mt-4 flex items-center gap-2 px-4 py-2.5 rounded-lg border"
+          style={{
+            borderColor: hexToRgba(accentColor, 0.2),
+            backgroundColor: hexToRgba(accentColor, 0.04),
+          }}
         >
-          <div className="w-1 h-1 rounded-full bg-accent-green animate-pulse" />
-          <span className="text-[11px] font-mono text-accent-green/70">
+          <div
+            className="w-1 h-1 rounded-full animate-pulse"
+            style={{ backgroundColor: accentColor }}
+          />
+          <span
+            className="text-[11px] font-mono"
+            style={{ color: hexToRgba(accentColor, 0.7) }}
+          >
             All sections revealed
           </span>
-          <span className="ml-auto text-[10px] font-mono text-[--text-muted]">
+          <span className="ml-auto text-[10px] font-mono text-white/25">
             {sections.length} / {sections.length}
           </span>
         </motion.div>

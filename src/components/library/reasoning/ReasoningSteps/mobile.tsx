@@ -123,7 +123,7 @@ function StepCard({
       className={cn(
         "rounded-xl border overflow-hidden transition-colors duration-200",
         isActive
-          ? "border-accent-green/25 bg-[rgba(11,224,155,0.04)]"
+          ? "border-[#0BE09B]/25 bg-[rgba(11,224,155,0.04)]"
           : isCompleted
           ? "border-white/[0.07] bg-white/[0.02]"
           : "border-white/[0.04] bg-transparent"
@@ -142,9 +142,9 @@ function StepCard({
         <div
           className={cn(
             "flex-shrink-0 w-[20px] h-[20px] rounded-full border flex items-center justify-center transition-all duration-300",
-            isCompleted && "border-accent-green/50 bg-accent-green/10",
+            isCompleted && "border-[#0BE09B]/50 bg-[#0BE09B]/10",
             isActive &&
-              "border-accent-green bg-accent-green/20 shadow-[0_0_10px_rgba(11,224,155,0.3)]",
+              "border-[#0BE09B] bg-[#0BE09B]/20 shadow-[0_0_10px_rgba(11,224,155,0.3)]",
             isPending && "border-white/10 bg-white/[0.03]"
           )}
         >
@@ -154,7 +154,7 @@ function StepCard({
             <span
               className={cn(
                 "text-[9px] font-mono font-bold",
-                isActive ? "text-accent-green" : "text-[--text-muted]"
+                isActive ? "text-[#0BE09B]" : "text-white/25"
               )}
             >
               {index + 1}
@@ -167,10 +167,10 @@ function StepCard({
           className={cn(
             "flex-1 text-[13px] font-semibold leading-snug transition-colors",
             isActive
-              ? "text-accent-green"
+              ? "text-[#0BE09B]"
               : isCompleted
-              ? "text-[--text-primary]"
-              : "text-[--text-muted]"
+              ? "text-white/[0.88]"
+              : "text-white/25"
           )}
         >
           {step.label}
@@ -182,7 +182,7 @@ function StepCard({
             <ConfidencePill value={confidence} />
           )}
           {isActive && (
-            <span className="text-[9px] font-mono uppercase tracking-wider text-accent-green/70 bg-accent-green/10 px-1.5 py-0.5 rounded hidden xs:inline">
+            <span className="text-[9px] font-mono uppercase tracking-wider text-[#0BE09B]/70 bg-[#0BE09B]/10 px-1.5 py-0.5 rounded hidden xs:inline">
               active
             </span>
           )}
@@ -190,7 +190,7 @@ function StepCard({
             <span
               className={cn(
                 "transition-colors",
-                isActive ? "text-accent-green" : "text-[--text-tertiary]"
+                isActive ? "text-[#0BE09B]" : "text-white/35"
               )}
             >
               <ChevronIcon open={expanded} />
@@ -215,7 +215,7 @@ function StepCard({
               <div className="h-px bg-white/[0.05] mb-3" />
 
               {/* Detail */}
-              <p className="text-detail text-[--text-secondary] leading-relaxed">
+              <p className="text-detail text-white/55 leading-relaxed">
                 {step.detail}
               </p>
 
@@ -242,7 +242,7 @@ function StepCard({
                       Evidence
                     </span>
                   </div>
-                  <p className="text-[11px] font-mono text-[--text-tertiary] leading-relaxed">
+                  <p className="text-[11px] font-mono text-white/35 leading-relaxed">
                     {step.evidence}
                   </p>
                 </div>
@@ -251,7 +251,7 @@ function StepCard({
               {/* Confidence bar */}
               {confidence !== undefined && (
                 <div className="mt-2 flex items-center gap-2">
-                  <span className="text-[10px] text-[--text-muted]">Confidence</span>
+                  <span className="text-[10px] text-white/25">Confidence</span>
                   <div className="flex-1 h-[3px] rounded-full bg-white/[0.08] overflow-hidden">
                     <motion.div
                       className="h-full rounded-full"
@@ -294,11 +294,11 @@ export function ReasoningStepsMobile({
     <div className="w-full max-w-[375px] mx-auto select-none">
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-1.5 h-1.5 rounded-full bg-accent-green animate-pulse" />
-        <span className="text-detail font-mono uppercase tracking-[0.1em] text-[--text-tertiary]">
+        <div className="w-1.5 h-1.5 rounded-full bg-[#0BE09B] animate-pulse" />
+        <span className="text-detail font-mono uppercase tracking-[0.1em] text-white/35">
           Reasoning trace
         </span>
-        <span className="ml-auto text-detail font-mono text-[--text-muted]">
+        <span className="ml-auto text-detail font-mono text-white/25">
           {clampedCurrent + 1} / {steps.length}
         </span>
       </div>
@@ -306,7 +306,7 @@ export function ReasoningStepsMobile({
       {/* Progress bar */}
       <div className="h-[2px] rounded-full bg-white/[0.06] mb-5 overflow-hidden">
         <motion.div
-          className="h-full rounded-full bg-accent-green/60"
+          className="h-full rounded-full bg-[#0BE09B]/60"
           initial={{ width: 0 }}
           animate={{
             width:

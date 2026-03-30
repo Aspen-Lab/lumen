@@ -19,6 +19,16 @@ export interface InsightStackProps {
   expandSpeed?: number;
   stackOffset?: number;
   parallax?: boolean;
+  /* Color props */
+  highlightColor?: string;
+  accentColor?: string;
+  cardBgColor?: string;
+  cardBorderColor?: string;
+  titleColor?: string;
+  summaryColor?: string;
+  detailColor?: string;
+  priorityBadgeColor?: string;
+  headerLabelColor?: string;
 }
 
 /* ── Default data ── */
@@ -53,17 +63,47 @@ const DEFAULT_INSIGHTS: Insight[] = [
   },
 ];
 
+/* ── Helpers ── */
+/** Parse a hex color to an "r,g,b" string for use in rgba(). */
+function hexToRgb(hex: string): string {
+  const clean = hex.replace("#", "");
+  const full =
+    clean.length === 3
+      ? clean
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : clean;
+  const num = parseInt(full, 16);
+  return `${(num >> 16) & 255},${(num >> 8) & 255},${num & 255}`;
+}
+
 /* ── Priority badge ── */
-function PriorityBadge({ value }: { value: number }) {
+function PriorityBadge({
+  value,
+  highlightColor,
+  priorityBadgeColor,
+}: {
+  value: number;
+  highlightColor: string;
+  priorityBadgeColor: string;
+}) {
   const isTop = value === 1;
+  const rgb = hexToRgb(highlightColor);
   return (
     <span
-      className={cn(
-        "inline-flex items-center text-[9px] font-mono font-bold uppercase tracking-[0.1em] px-1.5 py-0.5 rounded",
+      className="inline-flex items-center text-[9px] font-mono font-bold uppercase tracking-[0.1em] px-1.5 py-0.5 rounded"
+      style={
         isTop
-          ? "bg-[rgba(11,224,155,0.12)] text-[#0BE09B]"
-          : "bg-white/[0.06] text-white/30"
-      )}
+          ? {
+              background: `rgba(${rgb},0.12)`,
+              color: highlightColor,
+            }
+          : {
+              background: "rgba(255,255,255,0.06)",
+              color: priorityBadgeColor,
+            }
+      }
     >
       P{value}
     </span>
@@ -101,6 +141,14 @@ function InsightCard({
   expandSpeed,
   stackOffset,
   parallax,
+  highlightColor,
+  accentColor,
+  cardBgColor,
+  cardBorderColor,
+  titleColor,
+  summaryColor,
+  detailColor,
+  priorityBadgeColor,
 }: {
   insight: Insight;
   index: number;
@@ -110,11 +158,20 @@ function InsightCard({
   expandSpeed: number;
   stackOffset: number;
   parallax: boolean;
+  highlightColor: string;
+  accentColor: string;
+  cardBgColor: string;
+  cardBorderColor: string;
+  titleColor: string;
+  summaryColor: string;
+  detailColor: string;
+  priorityBadgeColor: string;
 }) {
   const [hovered, setHovered] = useState(false);
   const [mouseY, setMouseY] = useState(0);
 
   const topHighlight = isTop && highlightTop;
+  const hlRgb = hexToRgb(highlightColor);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!parallax) return;
@@ -127,6 +184,19 @@ function InsightCard({
     setHovered(false);
     setMouseY(0);
   };
+
+  /* Dynamic border / background for the card wrapper */
+  const cardStyle = topHighlight
+    ? {
+        border: `1px solid rgba(${hlRgb},0.3)`,
+        background: `rgba(${hlRgb},0.025)`,
+        boxShadow: `0 0 30px rgba(${hlRgb},0.07)${hovered ? ", 0 8px 40px rgba(0,0,0,0.5)" : ""}`,
+      }
+    : {
+        border: `1px solid ${hovered ? "rgba(255,255,255,0.12)" : cardBorderColor}`,
+        background: hovered ? "rgba(255,255,255,0.03)" : cardBgColor,
+        boxShadow: hovered ? "0 8px 40px rgba(0,0,0,0.5)" : undefined,
+      };
 
   return (
     <motion.div
@@ -142,17 +212,17 @@ function InsightCard({
       <motion.div
         animate={{ y: hovered ? -(stackOffset * 0.5) : 0 }}
         transition={{ duration: expandSpeed * 0.6, ease: [0.32, 0.72, 0, 1] }}
-        className={cn(
-          "relative rounded-xl border overflow-hidden transition-all duration-300",
-          topHighlight
-            ? "border-[rgba(11,224,155,0.3)] bg-[rgba(11,224,155,0.025)] shadow-[0_0_30px_rgba(11,224,155,0.07)]"
-            : "border-white/[0.07] bg-white/[0.02] hover:border-white/[0.12] hover:bg-white/[0.03]",
-          hovered && "shadow-[0_8px_40px_rgba(0,0,0,0.5)]"
-        )}
+        className="relative rounded-xl overflow-hidden transition-all duration-300"
+        style={cardStyle}
       >
         {/* Top accent strip */}
         {topHighlight && (
-          <div className="h-px w-full bg-gradient-to-r from-transparent via-[#0BE09B]/50 to-transparent" />
+          <div
+            className="h-px w-full"
+            style={{
+              background: `linear-gradient(to right, transparent, ${highlightColor}80, transparent)`,
+            }}
+          />
         )}
 
         {/* Card header */}
@@ -162,7 +232,7 @@ function InsightCard({
             className="flex-shrink-0 w-1.5 self-stretch rounded-full mt-0.5"
             style={{
               background: topHighlight
-                ? "linear-gradient(180deg, #0BE09B 0%, rgba(11,224,155,0.15) 100%)"
+                ? `linear-gradient(180deg, ${highlightColor} 0%, rgba(${hlRgb},0.15) 100%)`
                 : `rgba(255,255,255,${0.06 + (total - index) * 0.015})`,
             }}
           />
@@ -170,35 +240,44 @@ function InsightCard({
           <div className="flex-1 min-w-0">
             {/* Title row */}
             <div className="flex items-center gap-2 mb-1.5">
-              <PriorityBadge value={insight.priority} />
+              <PriorityBadge
+                value={insight.priority}
+                highlightColor={highlightColor}
+                priorityBadgeColor={priorityBadgeColor}
+              />
               <span
-                className={cn(
-                  "text-[13px] font-semibold leading-snug transition-colors duration-200",
-                  topHighlight
-                    ? "text-[#0BE09B]"
-                    : "text-white/75 group-hover:text-white/90"
-                )}
+                className="text-[13px] font-semibold leading-snug transition-colors duration-200"
+                style={{
+                  color: topHighlight
+                    ? highlightColor
+                    : hovered
+                    ? "rgba(255,255,255,0.9)"
+                    : titleColor,
+                }}
               >
                 {insight.title}
               </span>
             </div>
 
             {/* Summary */}
-            <p className="text-[12px] leading-relaxed text-white/45 group-hover:text-white/55 transition-colors duration-200">
+            <p
+              className="text-[12px] leading-relaxed transition-colors duration-200"
+              style={{ color: hovered ? "rgba(255,255,255,0.55)" : summaryColor }}
+            >
               {insight.summary}
             </p>
           </div>
 
           {/* Expand chevron */}
           <span
-            className={cn(
-              "flex-shrink-0 mt-0.5 transition-colors duration-200",
-              hovered
+            className="flex-shrink-0 mt-0.5 transition-colors duration-200"
+            style={{
+              color: hovered
                 ? topHighlight
-                  ? "text-[#0BE09B]"
-                  : "text-white/50"
-                : "text-white/20"
-            )}
+                  ? highlightColor
+                  : "rgba(255,255,255,0.5)"
+                : "rgba(255,255,255,0.2)",
+            }}
           >
             <ChevronIcon open={hovered} />
           </span>
@@ -218,22 +297,27 @@ function InsightCard({
               <div className="px-5 pb-4 pt-0">
                 <div className="h-px bg-white/[0.05] mb-3 ml-4" />
                 <div className="ml-4">
-                  <p className="text-[12.5px] leading-[1.7] text-white/55">
+                  <p
+                    className="text-[12.5px] leading-[1.7]"
+                    style={{ color: detailColor }}
+                  >
                     {insight.detail}
                   </p>
 
                   {/* Footer row */}
                   <div className="flex items-center gap-3 mt-3">
                     <div
-                      className={cn(
-                        "flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.08em]",
-                        topHighlight ? "text-[#0BE09B]/60" : "text-[#0091FF]/60"
-                      )}
+                      className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.08em]"
+                      style={{
+                        color: topHighlight
+                          ? `${highlightColor}99`
+                          : `${accentColor}99`,
+                      }}
                     >
                       <div
                         className="w-1 h-1 rounded-full"
                         style={{
-                          background: topHighlight ? "#0BE09B" : "#0091FF",
+                          background: topHighlight ? highlightColor : accentColor,
                         }}
                       />
                       AI analysis
@@ -260,6 +344,15 @@ export function InsightStack({
   expandSpeed = 0.35,
   stackOffset = 4,
   parallax = true,
+  highlightColor = "#0BE09B",
+  accentColor = "#0091FF",
+  cardBgColor = "rgba(255,255,255,0.02)",
+  cardBorderColor = "rgba(255,255,255,0.07)",
+  titleColor = "rgba(255,255,255,0.75)",
+  summaryColor = "rgba(255,255,255,0.45)",
+  detailColor = "rgba(255,255,255,0.55)",
+  priorityBadgeColor = "rgba(255,255,255,0.3)",
+  headerLabelColor = "rgba(255,255,255,0.35)",
 }: InsightStackProps) {
   const sorted = priorityOrder
     ? [...insights].sort((a, b) => a.priority - b.priority)
@@ -271,8 +364,14 @@ export function InsightStack({
     <div className="w-full max-w-[620px] mx-auto select-none">
       {/* Header */}
       <div className="flex items-center gap-2 mb-5">
-        <div className="w-1.5 h-1.5 rounded-full bg-[#0BE09B] animate-pulse" />
-        <span className="text-[11px] font-mono uppercase tracking-[0.1em] text-white/35">
+        <div
+          className="w-1.5 h-1.5 rounded-full animate-pulse"
+          style={{ background: highlightColor }}
+        />
+        <span
+          className="text-[11px] font-mono uppercase tracking-[0.1em]"
+          style={{ color: headerLabelColor }}
+        >
           AI Insights
         </span>
         <span className="ml-auto text-[11px] font-mono text-white/20">
@@ -296,6 +395,14 @@ export function InsightStack({
             expandSpeed={expandSpeed}
             stackOffset={stackOffset}
             parallax={parallax}
+            highlightColor={highlightColor}
+            accentColor={accentColor}
+            cardBgColor={cardBgColor}
+            cardBorderColor={cardBorderColor}
+            titleColor={titleColor}
+            summaryColor={summaryColor}
+            detailColor={detailColor}
+            priorityBadgeColor={priorityBadgeColor}
           />
         ))}
       </div>

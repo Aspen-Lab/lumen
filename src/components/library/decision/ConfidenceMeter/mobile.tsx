@@ -100,7 +100,7 @@ export function ConfidenceMeterMobile({
     <div
       className={cn(
         "relative flex flex-col items-center gap-4",
-        "px-5 py-5 rounded-2xl border border-[--border-default] bg-bg-elevated",
+        "px-5 py-5 rounded-2xl border border-white/[0.06] bg-[#161618]",
         "w-full max-w-[280px]"
       )}
     >
@@ -119,7 +119,7 @@ export function ConfidenceMeterMobile({
       )}
 
       {/* Label */}
-      <span className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[--text-muted] self-start">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.07em] text-white/25 self-start">
         {label}
       </span>
 

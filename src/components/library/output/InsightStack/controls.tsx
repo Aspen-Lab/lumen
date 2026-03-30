@@ -27,7 +27,7 @@ export const insightStackControls: ControlDefinition[] = [
     step: 1,
   },
 
-  /* ── Motion controls ──────────────────────────────── */
+  /* ── Motion controls ────────────────────────────────────────────── */
   {
     key: "expandSpeed",
     label: "Expand Speed",
@@ -46,13 +46,69 @@ export const insightStackControls: ControlDefinition[] = [
     default: true,
   },
 
-  /* ── Color controls ──────────────────────────────── */
+  /* ── Color controls ─────────────────────────────────────────────── */
   {
     key: "highlightColor",
     label: "Highlight Color",
     type: "color",
     layer: "color",
     default: "#0BE09B",
+  },
+  {
+    key: "accentColor",
+    label: "Accent Color",
+    type: "color",
+    layer: "color",
+    default: "#0091FF",
+  },
+  {
+    key: "cardBgColor",
+    label: "Card Background",
+    type: "color",
+    layer: "color",
+    default: "rgba(255,255,255,0.02)",
+  },
+  {
+    key: "cardBorderColor",
+    label: "Card Border",
+    type: "color",
+    layer: "color",
+    default: "rgba(255,255,255,0.07)",
+  },
+  {
+    key: "titleColor",
+    label: "Title Color",
+    type: "color",
+    layer: "color",
+    default: "rgba(255,255,255,0.75)",
+  },
+  {
+    key: "summaryColor",
+    label: "Summary Color",
+    type: "color",
+    layer: "color",
+    default: "rgba(255,255,255,0.45)",
+  },
+  {
+    key: "detailColor",
+    label: "Detail Color",
+    type: "color",
+    layer: "color",
+    default: "rgba(255,255,255,0.55)",
+  },
+  {
+    key: "priorityBadgeColor",
+    label: "Priority Badge Color",
+    type: "color",
+    layer: "color",
+    default: "rgba(255,255,255,0.3)",
+  },
+  {
+    key: "headerLabelColor",
+    label: "Header Label Color",
+    type: "color",
+    layer: "color",
+    default: "rgba(255,255,255,0.35)",
   },
   {
     key: "cardOpacity",

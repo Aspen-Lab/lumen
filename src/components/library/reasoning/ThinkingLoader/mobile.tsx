@@ -51,7 +51,7 @@ export function ThinkingLoaderMobile({
     <div
       className={cn(
         "w-full flex flex-col gap-3 px-4 py-4",
-        "rounded-xl border border-[--border-default] bg-bg-elevated",
+        "rounded-xl border border-white/[0.06] bg-[#161618]",
         "relative overflow-hidden"
       )}
       style={{

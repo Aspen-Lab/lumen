@@ -61,7 +61,7 @@ export function ThinkingLoader({
     <div
       className={cn(
         "inline-flex items-center gap-3 px-4 py-2.5",
-        "rounded-xl border border-[--border-default] bg-bg-elevated",
+        "rounded-xl border border-white/[0.06] bg-[#161618]",
         "relative overflow-hidden"
       )}
       style={{ filter: safeBlur > 0 ? \`blur(\${safeBlur * 0.05}px)\` : undefined }}
@@ -124,7 +124,7 @@ export function ThinkingLoader({
           <AnimatePresence mode="wait">
             <motion.span
               key={currentLabel}
-              className="absolute inset-0 text-detail font-mono text-[--text-secondary] leading-[18px] whitespace-nowrap"
+              className="absolute inset-0 text-detail font-mono text-white/55 leading-[18px] whitespace-nowrap"
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}

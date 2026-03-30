@@ -86,7 +86,7 @@ export function ConfidenceMeter({
   return (
     <div className={cn(
       "relative flex flex-col items-center gap-6 px-8 py-8",
-      "rounded-2xl border border-[--border-default] bg-bg-elevated w-full max-w-[520px]"
+      "rounded-2xl border border-white/[0.06] bg-[#161618] w-full max-w-[520px]"
     )}>
       {showGlow && (
         <motion.div
@@ -98,7 +98,7 @@ export function ConfidenceMeter({
       )}
 
       <div className="w-full flex items-center justify-between">
-        <span className="text-[11px] font-semibold uppercase tracking-wide text-[--text-secondary]">
+        <span className="text-[11px] font-semibold uppercase tracking-wide text-white/55">
           {label}
         </span>
         <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded-md"
@@ -130,14 +130,14 @@ export function ConfidenceMeter({
 
       {breakdown.length > 0 && (
         <div className="w-full space-y-2.5">
-          <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[--text-muted] mb-3">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25 mb-3">
             Breakdown
           </div>
           {breakdown.map((item, i) => (
             <motion.div key={item.label} className="flex items-center gap-3"
               initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 + i * 0.07, duration: 0.3 }}>
-              <span className="text-[11px] text-[--text-tertiary] w-[120px] shrink-0 truncate">
+              <span className="text-[11px] text-white/35 w-[120px] shrink-0 truncate">
                 {item.label}
               </span>
               <div className="flex-1 h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
@@ -146,7 +146,7 @@ export function ConfidenceMeter({
                   initial={{ scaleX: 0 }} animate={{ scaleX: Math.max(0, Math.min(1, item.value)) }}
                   transition={{ delay: 0.2 + i * 0.07, duration: 0.6 / speed, ease: [0.34, 1.1, 0.64, 1] }} />
               </div>
-              <span className="text-[11px] font-mono text-[--text-muted] w-8 text-right tabular-nums">
+              <span className="text-[11px] font-mono text-white/25 w-8 text-right tabular-nums">
                 {Math.round(Math.max(0, Math.min(1, item.value)) * 100)}%
               </span>
             </motion.div>

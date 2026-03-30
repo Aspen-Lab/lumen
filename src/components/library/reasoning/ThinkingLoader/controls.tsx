@@ -57,4 +57,32 @@ export const thinkingLoaderControls: ControlDefinition[] = [
     layer: "color",
     default: "#0BE09B",
   },
+  {
+    key: "glowColor",
+    label: "Glow Color",
+    type: "color",
+    layer: "color",
+    default: "#0BE09B",
+  },
+  {
+    key: "textColor",
+    label: "Text Color",
+    type: "color",
+    layer: "color",
+    default: "#8B9EB0",
+  },
+  {
+    key: "bgColor",
+    label: "Background Color",
+    type: "color",
+    layer: "color",
+    default: "#1A1F2E",
+  },
+  {
+    key: "borderColor",
+    label: "Border Color",
+    type: "color",
+    layer: "color",
+    default: "#2A3042",
+  },
 ];

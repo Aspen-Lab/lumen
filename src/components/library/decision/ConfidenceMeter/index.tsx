@@ -16,6 +16,16 @@ export interface ConfidenceMeterProps {
   fillSpeed?: number;
   overshoot?: number;
   glowOnHigh?: boolean;
+  /** Color used when confidence >= 0.6 */
+  highColor?: string;
+  /** Color used when confidence is between 0.3 and 0.6 */
+  midColor?: string;
+  /** Color used when confidence < 0.3 */
+  lowColor?: string;
+  /** Stroke color for the unfilled arc track */
+  trackColor?: string;
+  /** Color for the top label text */
+  labelColor?: string;
 }
 
 const DEFAULT_BREAKDOWN: BreakdownItem[] = [
@@ -54,11 +64,16 @@ function buildArc(startAngle: number, endAngle: number) {
   return `M ${start.x} ${start.y} A ${R} ${R} 0 ${largeArc} ${sweep} ${end.x} ${end.y}`;
 }
 
-// Map 0-1 confidence to a color
-function confidenceColor(v: number): string {
-  if (v < 0.3) return "#EF4444"; // red
-  if (v < 0.6) return "#FB7A29"; // orange
-  return "#0BE09B"; // green
+// Map 0-1 confidence to a color using the provided theme colors
+function confidenceColor(
+  v: number,
+  highColor: string,
+  midColor: string,
+  lowColor: string
+): string {
+  if (v < 0.3) return lowColor;
+  if (v < 0.6) return midColor;
+  return highColor;
 }
 
 // Build the arc angles for the gauge
@@ -75,6 +90,11 @@ export function ConfidenceMeter({
   fillSpeed = 1,
   overshoot = 0.08,
   glowOnHigh = true,
+  highColor = "#0BE09B",
+  midColor = "#FB7A29",
+  lowColor = "#EF4444",
+  trackColor = "rgba(255,255,255,0.06)",
+  labelColor,
 }: ConfidenceMeterProps) {
   const safeConfidence = Math.max(0, Math.min(1, confidence));
   const safeFillSpeed = Math.max(0.3, Math.min(3, fillSpeed));
@@ -108,7 +128,7 @@ export function ConfidenceMeter({
     return unsub;
   }, [springValue]);
 
-  const color = confidenceColor(safeConfidence);
+  const color = confidenceColor(safeConfidence, highColor, midColor, lowColor);
 
   const isHigh = safeConfidence > 0.6;
   const showGlow = glowOnHigh && isHigh;
@@ -130,7 +150,7 @@ export function ConfidenceMeter({
     <div
       className={cn(
         "relative flex flex-col items-center gap-6",
-        "px-8 py-8 rounded-2xl border border-[--border-default] bg-bg-elevated",
+        "px-8 py-8 rounded-2xl border border-white/[0.06] bg-[#161618]",
         "w-full max-w-[520px]"
       )}
     >
@@ -142,15 +162,17 @@ export function ConfidenceMeter({
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
           style={{
-            background:
-              "radial-gradient(ellipse at 50% 40%, rgba(11,224,155,0.07) 0%, transparent 65%)",
+            background: `radial-gradient(ellipse at 50% 40%, ${color}12 0%, transparent 65%)`,
           }}
         />
       )}
 
       {/* Top row: label */}
       <div className="w-full flex items-center justify-between">
-        <span className="text-sm font-semibold text-[--text-secondary] tracking-wide uppercase text-[11px]">
+        <span
+          className="text-sm font-semibold tracking-wide uppercase text-[11px] text-white/55"
+          style={labelColor ? { color: labelColor } : undefined}
+        >
           {label}
         </span>
         <span
@@ -177,7 +199,7 @@ export function ConfidenceMeter({
           <path
             d={buildArc(GAUGE_START, GAUGE_END)}
             fill="none"
-            stroke="rgba(255,255,255,0.06)"
+            stroke={trackColor}
             strokeWidth="10"
             strokeLinecap="round"
           />
@@ -222,7 +244,7 @@ export function ConfidenceMeter({
       {/* Breakdown bars */}
       {breakdown.length > 0 && (
         <div className="w-full space-y-2.5">
-          <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[--text-muted] mb-3">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/25 mb-3">
             Breakdown
           </div>
           {breakdown.map((item, i) => (
@@ -232,6 +254,9 @@ export function ConfidenceMeter({
               index={i}
               parentConfidence={safeConfidence}
               fillSpeed={safeFillSpeed}
+              highColor={highColor}
+              midColor={midColor}
+              lowColor={lowColor}
             />
           ))}
         </div>
@@ -279,14 +304,20 @@ function BreakdownRow({
   index,
   parentConfidence,
   fillSpeed,
+  highColor,
+  midColor,
+  lowColor,
 }: {
   item: BreakdownItem;
   index: number;
   parentConfidence: number;
   fillSpeed: number;
+  highColor: string;
+  midColor: string;
+  lowColor: string;
 }) {
   const pct = Math.max(0, Math.min(1, item.value));
-  const color = confidenceColor(parentConfidence);
+  const color = confidenceColor(parentConfidence, highColor, midColor, lowColor);
 
   return (
     <motion.div
@@ -295,7 +326,7 @@ function BreakdownRow({
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.1 + index * 0.07, duration: 0.3, ease: "easeOut" }}
     >
-      <span className="text-[11px] text-[--text-tertiary] w-[120px] shrink-0 truncate">
+      <span className="text-[11px] text-white/35 w-[120px] shrink-0 truncate">
         {item.label}
       </span>
       <div className="flex-1 h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
@@ -311,7 +342,7 @@ function BreakdownRow({
           }}
         />
       </div>
-      <span className="text-[11px] font-mono text-[--text-muted] w-8 text-right tabular-nums">
+      <span className="text-[11px] font-mono text-white/25 w-8 text-right tabular-nums">
         {Math.round(pct * 100)}%
       </span>
     </motion.div>

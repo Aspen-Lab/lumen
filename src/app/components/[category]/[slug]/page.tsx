@@ -51,6 +51,59 @@ import { ProgressiveBlurRevealMobile } from "@/components/library/motion/Progres
 import { progressiveBlurRevealControls } from "@/components/library/motion/ProgressiveBlurReveal/controls";
 import { progressiveBlurRevealCode } from "@/components/library/motion/ProgressiveBlurReveal/code";
 
+import { PromptInput } from "@/components/library/action/PromptInput";
+import { PromptInputMobile } from "@/components/library/action/PromptInput/mobile";
+import { promptInputControls } from "@/components/library/action/PromptInput/controls";
+import { promptInputCode } from "@/components/library/action/PromptInput/code";
+
+import { GlowButton } from "@/components/library/primitives/GlowButton";
+import { glowButtonControls } from "@/components/library/primitives/GlowButton/controls";
+import { glowButtonCode } from "@/components/library/primitives/GlowButton/code";
+
+import { GhostButton } from "@/components/library/primitives/GhostButton";
+import { ghostButtonControls } from "@/components/library/primitives/GhostButton/controls";
+import { ghostButtonCode } from "@/components/library/primitives/GhostButton/code";
+
+import { Toggle as TogglePrimitive } from "@/components/library/primitives/Toggle";
+import { toggleControls } from "@/components/library/primitives/Toggle/controls";
+import { toggleCode } from "@/components/library/primitives/Toggle/code";
+
+import { Slider as SliderPrimitive } from "@/components/library/primitives/Slider";
+import { sliderControls } from "@/components/library/primitives/Slider/controls";
+import { sliderCode } from "@/components/library/primitives/Slider/code";
+
+import { Badge } from "@/components/library/primitives/Badge";
+import { badgeControls } from "@/components/library/primitives/Badge/controls";
+import { badgeCode } from "@/components/library/primitives/Badge/code";
+
+import { StatusDot } from "@/components/library/primitives/StatusDot";
+import { statusDotControls } from "@/components/library/primitives/StatusDot/controls";
+import { statusDotCode } from "@/components/library/primitives/StatusDot/code";
+
+import { ProgressBar } from "@/components/library/primitives/ProgressBar";
+import { progressBarControls } from "@/components/library/primitives/ProgressBar/controls";
+import { progressBarCode } from "@/components/library/primitives/ProgressBar/code";
+
+import { ArcGauge } from "@/components/library/primitives/ArcGauge";
+import { arcGaugeControls } from "@/components/library/primitives/ArcGauge/controls";
+import { arcGaugeCode } from "@/components/library/primitives/ArcGauge/code";
+
+import { TextInput } from "@/components/library/primitives/TextInput";
+import { textInputControls } from "@/components/library/primitives/TextInput/controls";
+import { textInputCode } from "@/components/library/primitives/TextInput/code";
+
+import { Tooltip as TooltipPrimitive } from "@/components/library/primitives/Tooltip";
+import { tooltipControls } from "@/components/library/primitives/Tooltip/controls";
+import { tooltipCode } from "@/components/library/primitives/Tooltip/code";
+
+import { Popover as PopoverPrimitive } from "@/components/library/primitives/Popover";
+import { popoverControls } from "@/components/library/primitives/Popover/controls";
+import { popoverCode } from "@/components/library/primitives/Popover/code";
+
+import { Tag } from "@/components/library/primitives/Tag";
+import { tagControls } from "@/components/library/primitives/Tag/controls";
+import { tagCode } from "@/components/library/primitives/Tag/code";
+
 interface ComponentEntry {
   desktop: React.ComponentType<Record<string, unknown>>;
   mobile: React.ComponentType<Record<string, unknown>>;
@@ -106,6 +159,84 @@ const componentMap: Record<string, ComponentEntry> = {
     mobile: ProgressiveBlurRevealMobile as React.ComponentType<Record<string, unknown>>,
     controls: progressiveBlurRevealControls,
     code: progressiveBlurRevealCode,
+  },
+  "prompt-input": {
+    desktop: PromptInput as React.ComponentType<Record<string, unknown>>,
+    mobile: PromptInputMobile as React.ComponentType<Record<string, unknown>>,
+    controls: promptInputControls,
+    code: promptInputCode,
+  },
+  "glow-button": {
+    desktop: GlowButton as React.ComponentType<Record<string, unknown>>,
+    mobile: GlowButton as React.ComponentType<Record<string, unknown>>,
+    controls: glowButtonControls,
+    code: glowButtonCode,
+  },
+  "ghost-button": {
+    desktop: GhostButton as React.ComponentType<Record<string, unknown>>,
+    mobile: GhostButton as React.ComponentType<Record<string, unknown>>,
+    controls: ghostButtonControls,
+    code: ghostButtonCode,
+  },
+  "toggle": {
+    desktop: TogglePrimitive as React.ComponentType<Record<string, unknown>>,
+    mobile: TogglePrimitive as React.ComponentType<Record<string, unknown>>,
+    controls: toggleControls,
+    code: toggleCode,
+  },
+  "slider": {
+    desktop: SliderPrimitive as React.ComponentType<Record<string, unknown>>,
+    mobile: SliderPrimitive as React.ComponentType<Record<string, unknown>>,
+    controls: sliderControls,
+    code: sliderCode,
+  },
+  "badge": {
+    desktop: Badge as React.ComponentType<Record<string, unknown>>,
+    mobile: Badge as React.ComponentType<Record<string, unknown>>,
+    controls: badgeControls,
+    code: badgeCode,
+  },
+  "status-dot": {
+    desktop: StatusDot as React.ComponentType<Record<string, unknown>>,
+    mobile: StatusDot as React.ComponentType<Record<string, unknown>>,
+    controls: statusDotControls,
+    code: statusDotCode,
+  },
+  "progress-bar": {
+    desktop: ProgressBar as React.ComponentType<Record<string, unknown>>,
+    mobile: ProgressBar as React.ComponentType<Record<string, unknown>>,
+    controls: progressBarControls,
+    code: progressBarCode,
+  },
+  "arc-gauge": {
+    desktop: ArcGauge as React.ComponentType<Record<string, unknown>>,
+    mobile: ArcGauge as React.ComponentType<Record<string, unknown>>,
+    controls: arcGaugeControls,
+    code: arcGaugeCode,
+  },
+  "text-input": {
+    desktop: TextInput as React.ComponentType<Record<string, unknown>>,
+    mobile: TextInput as React.ComponentType<Record<string, unknown>>,
+    controls: textInputControls,
+    code: textInputCode,
+  },
+  "tooltip": {
+    desktop: TooltipPrimitive as React.ComponentType<Record<string, unknown>>,
+    mobile: TooltipPrimitive as React.ComponentType<Record<string, unknown>>,
+    controls: tooltipControls,
+    code: tooltipCode,
+  },
+  "popover": {
+    desktop: PopoverPrimitive as React.ComponentType<Record<string, unknown>>,
+    mobile: PopoverPrimitive as React.ComponentType<Record<string, unknown>>,
+    controls: popoverControls,
+    code: popoverCode,
+  },
+  "tag": {
+    desktop: Tag as React.ComponentType<Record<string, unknown>>,
+    mobile: Tag as React.ComponentType<Record<string, unknown>>,
+    controls: tagControls,
+    code: tagCode,
   },
 };
 
@@ -209,13 +340,64 @@ export default function ComponentPage() {
       {/* Main window */}
       <div className="rounded-2xl bg-surface-1/60 backdrop-blur-sm overflow-hidden shadow-2xl shadow-black/20">
         {view === "preview" ? (
-          <div
-            className={cn(
-              "min-h-[460px] flex items-center justify-center p-12 transition-all duration-300",
-              device === "mobile" && "max-w-[375px] mx-auto"
-            )}
-          >
-            <Component {...controlValues} />
+          <div className="relative">
+            {/* Grid background */}
+            <div className="absolute inset-0 opacity-[0.03]"
+              style={{
+                backgroundImage: `
+                  linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
+                  linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)
+                `,
+                backgroundSize: "40px 40px",
+              }}
+            />
+
+            {/* Crosshair center lines */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-1/2 left-6 right-6 h-px bg-white/[0.03]" />
+              <div className="absolute left-1/2 top-6 bottom-6 w-px bg-white/[0.03]" />
+            </div>
+
+            {/* Corner marks */}
+            <div className="absolute top-4 left-4 w-5 h-5 pointer-events-none">
+              <div className="absolute top-0 left-0 w-full h-px bg-white/[0.08]" />
+              <div className="absolute top-0 left-0 h-full w-px bg-white/[0.08]" />
+            </div>
+            <div className="absolute top-4 right-4 w-5 h-5 pointer-events-none">
+              <div className="absolute top-0 right-0 w-full h-px bg-white/[0.08]" />
+              <div className="absolute top-0 right-0 h-full w-px bg-white/[0.08]" />
+            </div>
+            <div className="absolute bottom-4 left-4 w-5 h-5 pointer-events-none">
+              <div className="absolute bottom-0 left-0 w-full h-px bg-white/[0.08]" />
+              <div className="absolute bottom-0 left-0 h-full w-px bg-white/[0.08]" />
+            </div>
+            <div className="absolute bottom-4 right-4 w-5 h-5 pointer-events-none">
+              <div className="absolute bottom-0 right-0 w-full h-px bg-white/[0.08]" />
+              <div className="absolute bottom-0 right-0 h-full w-px bg-white/[0.08]" />
+            </div>
+
+            {/* Ambient glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-32 bg-white/[0.01] blur-3xl rounded-full pointer-events-none" />
+
+            {/* Component */}
+            <div
+              className={cn(
+                "relative z-[1] min-h-[460px] flex items-center justify-center p-12 transition-all duration-300",
+                device === "mobile" && "max-w-[375px] mx-auto"
+              )}
+            >
+              <Component {...controlValues} />
+            </div>
+
+            {/* Bottom info bar */}
+            <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between pointer-events-none z-[2]">
+              <span className="text-[10px] font-mono text-white/[0.08] uppercase tracking-wider">
+                {device} preview
+              </span>
+              <span className="text-[10px] font-mono text-white/[0.08]">
+                {device === "desktop" ? "960×auto" : "375×auto"}
+              </span>
+            </div>
           </div>
         ) : (
           <CodeHighlight code={entry.code} />

@@ -140,8 +140,8 @@ function MobileCard({
           className={cn(
             "w-7 h-7 rounded-full border flex items-center justify-center flex-shrink-0 transition-all duration-300",
             revealed
-              ? "border-accent-green/40 bg-accent-green/10 text-accent-green"
-              : "border-white/10 bg-white/[0.03] text-[--text-muted]"
+              ? "border-[#0BE09B]/40 bg-[#0BE09B]/10 text-[#0BE09B]"
+              : "border-white/10 bg-white/[0.03] text-white/25"
           )}
         >
           <LockIcon open={revealed} />
@@ -151,7 +151,7 @@ function MobileCard({
         <span
           className={cn(
             "text-[13px] font-semibold flex-1 transition-colors duration-300",
-            revealed ? "text-[--text-primary]" : "text-[--text-tertiary]"
+            revealed ? "text-white/[0.88]" : "text-white/35"
           )}
         >
           {section.title}
@@ -163,7 +163,7 @@ function MobileCard({
           <span
             className={cn(
               "text-[10px] font-mono tabular-nums transition-colors",
-              revealed ? "text-accent-green/50" : "text-[--text-muted]"
+              revealed ? "text-[#0BE09B]/50" : "text-white/25"
             )}
           >
             {String(index + 1).padStart(2, "0")}
@@ -184,7 +184,7 @@ function MobileCard({
         <motion.p
           animate={{ filter: `blur(${currentBlur}px)` }}
           transition={{ duration, ease: easing }}
-          className="text-[13px] leading-relaxed text-[--text-secondary]"
+          className="text-[13px] leading-relaxed text-white/55"
           style={{ userSelect: revealed ? "auto" : "none" }}
         >
           {section.content}
@@ -199,7 +199,7 @@ function MobileCard({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="mt-2 text-[11px] font-mono text-[--text-muted]"
+              className="mt-2 text-[11px] font-mono text-white/25"
             >
               tap to reveal
             </motion.p>
@@ -268,13 +268,13 @@ export function ProgressiveBlurRevealMobile({
         <div
           className={cn(
             "w-1.5 h-1.5 rounded-full transition-colors duration-500",
-            allRevealed ? "bg-accent-green animate-pulse" : "bg-white/20"
+            allRevealed ? "bg-[#0BE09B] animate-pulse" : "bg-white/20"
           )}
         />
-        <span className="text-[11px] font-mono uppercase tracking-[0.1em] text-[--text-tertiary]">
+        <span className="text-[11px] font-mono uppercase tracking-[0.1em] text-white/35">
           Progressive Reveal
         </span>
-        <span className="ml-auto font-mono text-[11px] text-[--text-muted]">
+        <span className="ml-auto font-mono text-[11px] text-white/25">
           {revealedSet.size}/{sections.length}
         </span>
       </div>
@@ -282,7 +282,7 @@ export function ProgressiveBlurRevealMobile({
       {/* Progress bar */}
       <div className="h-[2px] rounded-full bg-white/[0.05] mb-4 overflow-hidden">
         <motion.div
-          className="h-full rounded-full bg-accent-green/50"
+          className="h-full rounded-full bg-[#0BE09B]/50"
           animate={{
             width:
               sections.length > 0
@@ -317,7 +317,7 @@ export function ProgressiveBlurRevealMobile({
         <div className="mt-4 flex items-center justify-between gap-3">
           {!allRevealed && (
             <button
-              className="flex-1 text-[12px] font-mono text-[--text-tertiary] hover:text-[--text-secondary] transition-colors py-2.5 rounded-xl border border-white/[0.06] hover:border-white/[0.1] active:scale-[0.97]"
+              className="flex-1 text-[12px] font-mono text-white/35 hover:text-white/55 transition-colors py-2.5 rounded-xl border border-white/[0.06] hover:border-white/[0.1] active:scale-[0.97]"
               onClick={() =>
                 setRevealedSet(new Set(sections.map((_, i) => i)))
               }
@@ -327,7 +327,7 @@ export function ProgressiveBlurRevealMobile({
           )}
           {revealedSet.size > 0 && (
             <button
-              className="flex-1 text-[12px] font-mono text-[--text-muted] hover:text-[--text-tertiary] transition-colors py-2.5 rounded-xl border border-white/[0.04] hover:border-white/[0.07] active:scale-[0.97]"
+              className="flex-1 text-[12px] font-mono text-white/25 hover:text-white/35 transition-colors py-2.5 rounded-xl border border-white/[0.04] hover:border-white/[0.07] active:scale-[0.97]"
               onClick={() => setRevealedSet(new Set())}
             >
               reset
@@ -346,9 +346,9 @@ export function ProgressiveBlurRevealMobile({
             transition={{ duration: 0.35, ease: "easeOut" }}
             className="mt-3 overflow-hidden"
           >
-            <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-accent-green/20 bg-[rgba(11,224,155,0.04)]">
-              <div className="w-1 h-1 rounded-full bg-accent-green animate-pulse" />
-              <span className="text-[11px] font-mono text-accent-green/70">
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[#0BE09B]/20 bg-[rgba(11,224,155,0.04)]">
+              <div className="w-1 h-1 rounded-full bg-[#0BE09B] animate-pulse" />
+              <span className="text-[11px] font-mono text-[#0BE09B]/70">
                 All sections revealed
               </span>
             </div>

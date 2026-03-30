@@ -51,11 +51,32 @@ export const confidenceMeterControls: ControlDefinition[] = [
     default: "#0BE09B",
   },
   {
+    key: "midColor",
+    label: "Mid Color",
+    type: "color",
+    layer: "color",
+    default: "#FB7A29",
+  },
+  {
     key: "lowColor",
     label: "Low Color",
     type: "color",
     layer: "color",
     default: "#EF4444",
+  },
+  {
+    key: "trackColor",
+    label: "Track Color",
+    type: "color",
+    layer: "color",
+    default: "#FFFFFF0F",
+  },
+  {
+    key: "labelColor",
+    label: "Label Color",
+    type: "color",
+    layer: "color",
+    default: "",
   },
   {
     key: "arcOpacity",

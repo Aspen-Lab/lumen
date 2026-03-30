@@ -13,6 +13,12 @@ export interface ThinkingLoaderProps {
   pulseSpeed?: number;
   glowIntensity?: number;
   blur?: number;
+  // Color props
+  accentColor?: string;
+  glowColor?: string;
+  textColor?: string;
+  bgColor?: string;
+  borderColor?: string;
 }
 
 const STAGE_LABELS: Record<ThinkingStage, string[]> = {
@@ -38,6 +44,19 @@ function useCyclingLabel(labels: string[], interval: number): string {
   return labels[index];
 }
 
+/** Parse a hex color into its r, g, b components as a comma-separated string,
+ *  e.g. "#0BE09B" → "11, 224, 155". Falls back to the provided fallback string
+ *  if the input is not a valid 6-digit hex. */
+function hexToRgbParts(hex: string, fallback: string): string {
+  const clean = hex.replace("#", "");
+  if (clean.length !== 6) return fallback;
+  const r = parseInt(clean.slice(0, 2), 16);
+  const g = parseInt(clean.slice(2, 4), 16);
+  const b = parseInt(clean.slice(4, 6), 16);
+  if (isNaN(r) || isNaN(g) || isNaN(b)) return fallback;
+  return `${r}, ${g}, ${b}`;
+}
+
 export function ThinkingLoader({
   stage = "thinking",
   duration = 3000,
@@ -45,6 +64,11 @@ export function ThinkingLoader({
   pulseSpeed = 1.2,
   glowIntensity = 0.6,
   blur = 0,
+  accentColor = "#0BE09B",
+  glowColor,
+  textColor,
+  bgColor,
+  borderColor,
 }: ThinkingLoaderProps) {
   const labels = STAGE_LABELS[stage];
   const currentLabel = useCyclingLabel(labels, duration);
@@ -55,18 +79,28 @@ export function ThinkingLoader({
   const safeGlow = Math.max(0, Math.min(1, glowIntensity));
   const safeBlur = Math.max(0, Math.min(20, blur));
 
-  const glowShadow = `0 0 ${8 + safeGlow * 24}px rgba(11, 224, 155, ${0.15 + safeGlow * 0.55})`;
+  // Resolve the effective glow color: prefer explicit glowColor, fall back to accentColor
+  const effectiveGlowColor = glowColor ?? accentColor;
+  const effectiveGlowRgb = hexToRgbParts(effectiveGlowColor, "11, 224, 155");
+  const accentRgb = hexToRgbParts(accentColor, "11, 224, 155");
+
+  const glowShadow = `0 0 ${8 + safeGlow * 24}px rgba(${effectiveGlowRgb}, ${0.15 + safeGlow * 0.55})`;
   const pulseDuration = 1 / safeSpeed;
 
   return (
     <div
       className={cn(
         "inline-flex items-center gap-3 px-4 py-2.5",
-        "rounded-xl border border-[--border-default] bg-bg-elevated",
-        "relative overflow-hidden"
+        "rounded-xl relative overflow-hidden",
+        !bgColor && "bg-[#161618]",
+        !borderColor && "border border-white/[0.06]"
       )}
       style={{
         filter: safeBlur > 0 ? `blur(${safeBlur * 0.05}px)` : undefined,
+        ...(bgColor ? { background: bgColor } : {}),
+        ...(borderColor
+          ? { border: `1px solid ${borderColor}` }
+          : {}),
       }}
     >
       {/* Ambient glow backdrop */}
@@ -79,7 +113,7 @@ export function ThinkingLoader({
           ease: "easeInOut",
         }}
         style={{
-          background: `radial-gradient(ellipse at 20% 50%, rgba(11, 224, 155, ${
+          background: `radial-gradient(ellipse at 20% 50%, rgba(${effectiveGlowRgb}, ${
             0.04 + safeGlow * 0.1
           }) 0%, transparent 70%)`,
         }}
@@ -97,7 +131,7 @@ export function ThinkingLoader({
             ease: "easeOut",
           }}
           style={{
-            background: `rgba(11, 224, 155, ${0.25 + safeGlow * 0.35})`,
+            background: `rgba(${effectiveGlowRgb}, ${0.25 + safeGlow * 0.35})`,
             boxShadow: glowShadow,
           }}
         />
@@ -111,7 +145,7 @@ export function ThinkingLoader({
             ease: "easeInOut",
           }}
           style={{
-            background: "#0BE09B",
+            background: accentColor,
             boxShadow: glowShadow,
           }}
         />
@@ -120,7 +154,7 @@ export function ThinkingLoader({
       {/* Stage icon — subtle mono marker */}
       <span
         className="font-mono text-[10px] flex-shrink-0 tabular-nums"
-        style={{ color: "rgba(11, 224, 155, 0.5)" }}
+        style={{ color: textColor ?? `rgba(${accentRgb}, 0.5)` }}
       >
         {icon}
       </span>
@@ -131,7 +165,7 @@ export function ThinkingLoader({
           <motion.span
             key={i}
             className="block w-[3px] h-[3px] rounded-full"
-            style={{ background: "#0BE09B" }}
+            style={{ background: accentColor }}
             animate={{ opacity: [0.2, 1, 0.2], y: [0, -2, 0] }}
             transition={{
               duration: pulseDuration * 0.9,
@@ -149,7 +183,11 @@ export function ThinkingLoader({
           <AnimatePresence mode="wait">
             <motion.span
               key={currentLabel}
-              className="absolute inset-0 text-detail font-mono text-[--text-secondary] leading-[18px] whitespace-nowrap"
+              className={cn(
+                "absolute inset-0 text-detail font-mono leading-[18px] whitespace-nowrap",
+                !textColor && "text-white/55"
+              )}
+              style={textColor ? { color: textColor } : undefined}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
@@ -171,7 +209,7 @@ export function ThinkingLoader({
           ease: "linear",
         }}
         style={{
-          background: `linear-gradient(to bottom, transparent, rgba(11, 224, 155, ${
+          background: `linear-gradient(to bottom, transparent, rgba(${effectiveGlowRgb}, ${
             0.15 + safeGlow * 0.45
           }), transparent)`,
         }}

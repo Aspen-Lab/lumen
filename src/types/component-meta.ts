@@ -1,8 +1,9 @@
 export type ComponentCategory =
+  | "primitives"
+  | "action"
   | "reasoning"
   | "decision"
   | "output"
-  | "action"
   | "motion";
 
 export type ComponentTag =

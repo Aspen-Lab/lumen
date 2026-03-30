@@ -2,7 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X, Menu } from "lucide-react";
+import {
+  X, Menu, MessageSquare, Zap, Brain, Activity,
+  Scale, BarChart3, Sparkles, Layers, Play, Eye,
+  BookOpen, Gamepad2, FileText, Search
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { categories, getComponentsByCategory } from "@/data/registry";
 
@@ -10,6 +14,26 @@ interface SidebarProps {
   open: boolean;
   onClose: () => void;
 }
+
+const categoryIcons: Record<string, React.ElementType> = {
+  action: Zap,
+  reasoning: Brain,
+  decision: Scale,
+  output: Sparkles,
+  motion: Play,
+};
+
+const componentIcons: Record<string, React.ElementType> = {
+  "prompt-input": MessageSquare,
+  "smart-cta": Zap,
+  "thinking-loader": Activity,
+  "reasoning-steps": Layers,
+  "decision-card": Scale,
+  "confidence-meter": BarChart3,
+  "result-reveal": Eye,
+  "insight-stack": Layers,
+  "progressive-blur-reveal": Play,
+};
 
 export function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname();
@@ -25,51 +49,54 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-sidebar bg-surface-0 flex flex-col transition-transform duration-200",
+          "fixed top-14 left-0 z-50 h-[calc(100%-56px)] w-sidebar bg-[#0A0A10] flex flex-col transition-transform duration-200",
           "lg:translate-x-0 lg:static lg:z-auto",
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Logo */}
-        <div className="flex items-center justify-between px-6 h-16">
-          <Link href="/" className="flex items-center gap-2" onClick={onClose}>
-            <span className="text-xl font-bold text-white tracking-tight">
-              Lumen
-            </span>
-          </Link>
-          <button
-            onClick={onClose}
-            className="lg:hidden p-1.5 text-white/30 hover:text-white/60 transition-colors"
-          >
-            <X size={18} />
-          </button>
+        <div className="absolute top-0 right-0 bottom-0 w-px bg-white/[0.06]" />
+
+        {/* Search placeholder */}
+        <div className="px-3 pt-3 pb-1">
+          <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-white/[0.03] text-white/20 cursor-pointer hover:bg-white/[0.05] transition-colors">
+            <Search size={14} />
+            <span className="text-sm">Search...</span>
+            <span className="ml-auto text-[10px] font-mono text-white/10 bg-white/[0.04] px-1.5 py-0.5 rounded">/</span>
+          </div>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto py-2 px-4">
+        <nav className="flex-1 overflow-y-auto py-2 px-3">
           {categories.map((cat) => {
             const components = getComponentsByCategory(cat.slug);
             return (
-              <div key={cat.slug} className="mb-5">
-                <div className="px-2 mb-2 text-xs font-medium text-white/25 uppercase tracking-widest">
-                  {cat.name}
+              <div key={cat.slug} className="mb-1">
+                {/* Category header */}
+                <div className="px-3 pt-4 pb-1.5">
+                  <span className="text-xs font-medium text-white/25">
+                    {cat.name}
+                  </span>
                 </div>
+
+                {/* Items */}
                 {components.map((comp) => {
                   const href = `/components/${comp.category}/${comp.slug}`;
                   const isActive = pathname === href;
+                  const Icon = componentIcons[comp.slug] || Sparkles;
                   return (
                     <Link
                       key={comp.slug}
                       href={href}
                       onClick={onClose}
                       className={cn(
-                        "block px-2 py-2 rounded-lg text-sm transition-colors duration-100",
+                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-100",
                         isActive
                           ? "bg-white/[0.07] text-white"
                           : "text-white/40 hover:text-white/70 hover:bg-white/[0.03]"
                       )}
                     >
-                      {comp.name}
+                      <Icon size={16} className={isActive ? "text-white/60" : "text-white/20"} />
+                      <span>{comp.name}</span>
                     </Link>
                   );
                 })}
@@ -79,15 +106,21 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </nav>
 
         {/* Footer */}
-        <div className="px-4 py-5 flex flex-col gap-1">
-          {["Patterns", "Playground", "Docs"].map((label) => (
+        <div className="px-3 py-3">
+          <div className="h-px bg-white/[0.04] mb-2" />
+          {[
+            { label: "Patterns", icon: BookOpen },
+            { label: "Playground", icon: Gamepad2 },
+            { label: "Docs", icon: FileText },
+          ].map(({ label, icon: Icon }) => (
             <Link
               key={label}
               href={`/${label.toLowerCase()}`}
-              className="px-2 py-1.5 text-xs text-white/20 hover:text-white/40 transition-colors"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-white/20 hover:text-white/40 hover:bg-white/[0.02] transition-colors"
             >
-              {label}
-              <span className="ml-2 text-[10px] text-white/10">soon</span>
+              <Icon size={15} className="text-white/12" />
+              <span>{label}</span>
+              <span className="ml-auto text-[9px] font-mono text-white/8">soon</span>
             </Link>
           ))}
         </div>

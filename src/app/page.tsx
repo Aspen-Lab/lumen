@@ -10,7 +10,20 @@ import { ConfidenceMeter } from "@/components/library/decision/ConfidenceMeter";
 import { ResultReveal } from "@/components/library/output/ResultReveal";
 import { InsightStack } from "@/components/library/output/InsightStack";
 import { SmartCTA } from "@/components/library/action/SmartCTA";
+import { PromptInput } from "@/components/library/action/PromptInput";
 import { ProgressiveBlurReveal } from "@/components/library/motion/ProgressiveBlurReveal";
+import { GlowButton } from "@/components/library/primitives/GlowButton";
+import { GhostButton } from "@/components/library/primitives/GhostButton";
+import { Toggle as TogglePrimitive } from "@/components/library/primitives/Toggle";
+import { Slider as SliderPrimitive } from "@/components/library/primitives/Slider";
+import { Badge } from "@/components/library/primitives/Badge";
+import { StatusDot } from "@/components/library/primitives/StatusDot";
+import { ProgressBar } from "@/components/library/primitives/ProgressBar";
+import { ArcGauge } from "@/components/library/primitives/ArcGauge";
+import { TextInput } from "@/components/library/primitives/TextInput";
+import { Tooltip as TooltipPrimitive } from "@/components/library/primitives/Tooltip";
+import { Popover as PopoverPrimitive } from "@/components/library/primitives/Popover";
+import { Tag } from "@/components/library/primitives/Tag";
 
 const previewMap: Record<string, React.ComponentType> = {
   "thinking-loader": ThinkingLoader,
@@ -20,7 +33,20 @@ const previewMap: Record<string, React.ComponentType> = {
   "result-reveal": ResultReveal,
   "insight-stack": InsightStack,
   "smart-cta": SmartCTA,
+  "prompt-input": PromptInput,
   "progressive-blur-reveal": ProgressiveBlurReveal,
+  "glow-button": GlowButton,
+  "ghost-button": GhostButton,
+  "toggle": TogglePrimitive,
+  "slider": SliderPrimitive,
+  "badge": Badge,
+  "status-dot": StatusDot,
+  "progress-bar": ProgressBar,
+  "arc-gauge": ArcGauge,
+  "text-input": TextInput,
+  "tooltip": TooltipPrimitive,
+  "popover": PopoverPrimitive,
+  "tag": Tag,
 };
 
 export default function HomePage() {

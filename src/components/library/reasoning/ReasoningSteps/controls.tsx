@@ -1,6 +1,7 @@
 import { ControlDefinition } from "@/types/controls";
 
 export const reasoningStepsControls: ControlDefinition[] = [
+  /* ── Architecture ── */
   {
     key: "currentStep",
     label: "Current Step",
@@ -18,6 +19,8 @@ export const reasoningStepsControls: ControlDefinition[] = [
     layer: "architecture",
     default: true,
   },
+
+  /* ── Motion ── */
   {
     key: "revealSpeed",
     label: "Reveal Speed",
@@ -45,6 +48,8 @@ export const reasoningStepsControls: ControlDefinition[] = [
     layer: "motion",
     default: true,
   },
+
+  /* ── Color ── */
   {
     key: "accentColor",
     label: "Accent Color",
@@ -53,13 +58,87 @@ export const reasoningStepsControls: ControlDefinition[] = [
     default: "#0BE09B",
   },
   {
-    key: "confidenceBarOpacity",
-    label: "Confidence Bar Opacity",
-    type: "slider",
+    key: "evidenceColor",
+    label: "Evidence Color",
+    type: "color",
     layer: "color",
-    default: 0.8,
-    min: 0.3,
-    max: 1,
-    step: 0.05,
+    default: "#0091FF",
+  },
+  {
+    key: "confidenceHighColor",
+    label: "Confidence High",
+    type: "color",
+    layer: "color",
+    default: "#0BE09B",
+  },
+  {
+    key: "confidenceMidColor",
+    label: "Confidence Mid",
+    type: "color",
+    layer: "color",
+    default: "#FB7A29",
+  },
+  {
+    key: "confidenceLowColor",
+    label: "Confidence Low",
+    type: "color",
+    layer: "color",
+    default: "#ef4444",
+  },
+  {
+    key: "railColor",
+    label: "Rail Color",
+    type: "color",
+    layer: "color",
+    default: "#0f0f0f",
+  },
+  {
+    key: "completedBorderColor",
+    label: "Completed Border",
+    type: "color",
+    layer: "color",
+    default: "#1a1a1a",
+  },
+  {
+    key: "completedBgColor",
+    label: "Completed Background",
+    type: "color",
+    layer: "color",
+    default: "#0d0d0d",
+  },
+  {
+    key: "activeLabelColor",
+    label: "Active Label Color",
+    type: "color",
+    layer: "color",
+    default: "#0BE09B",
+  },
+  {
+    key: "completedLabelColor",
+    label: "Completed Label Color",
+    type: "color",
+    layer: "color",
+    default: "#ffffff",
+  },
+  {
+    key: "pendingLabelColor",
+    label: "Pending Label Color",
+    type: "color",
+    layer: "color",
+    default: "#555555",
+  },
+  {
+    key: "detailTextColor",
+    label: "Detail Text Color",
+    type: "color",
+    layer: "color",
+    default: "#888888",
+  },
+  {
+    key: "evidenceTextColor",
+    label: "Evidence Text Color",
+    type: "color",
+    layer: "color",
+    default: "#666666",
   },
 ];

@@ -16,6 +16,26 @@ export interface DecisionCardProps {
   entryAnimation?: EntryAnimation;
   highlightPulse?: boolean;
   borderGlow?: boolean;
+  /** Color shown when confidence >= 0.75. Default: #0BE09B */
+  highConfidenceColor?: string;
+  /** Color shown when 0.45 <= confidence < 0.75. Default: #0091FF */
+  midConfidenceColor?: string;
+  /** Color shown when confidence < 0.45. Default: #FB7A29 */
+  lowConfidenceColor?: string;
+  /** Card background color. Default: #111113 */
+  cardBackgroundColor?: string;
+  /** Primary body text color. Default: rgba(255,255,255,0.82) */
+  textPrimaryColor?: string;
+  /** Secondary / muted text color. Default: rgba(255,255,255,0.35) */
+  textSecondaryColor?: string;
+  /** Tradeoffs section accent dot color. Default: rgba(251,122,41,0.7) */
+  tradeoffAccentColor?: string;
+  /**
+   * Override the border/glow color used when borderGlow is true.
+   * When omitted the glow color is derived automatically from the
+   * active confidence color.
+   */
+  borderGlowColor?: string;
 }
 
 /* ── Defaults ───────────────────────────────────────────────── */
@@ -58,9 +78,9 @@ const urgencyConfig: Record<
 > = {
   low: {
     label: "Low urgency",
-    dot: "bg-accent-green",
-    badge: "bg-[rgba(11,224,155,0.08)] border-[rgba(11,224,155,0.18)] text-accent-green",
-    text: "text-accent-green",
+    dot: "bg-[#0BE09B]",
+    badge: "bg-[rgba(11,224,155,0.08)] border-[rgba(11,224,155,0.18)] text-[#0BE09B]",
+    text: "text-[#0BE09B]",
   },
   medium: {
     label: "Medium urgency",
@@ -78,10 +98,15 @@ const urgencyConfig: Record<
 
 /* ── Confidence helpers ─────────────────────────────────────── */
 
-function confidenceColor(c: number) {
-  if (c >= 0.75) return "#0BE09B"; // green
-  if (c >= 0.45) return "#0091FF"; // blue
-  return "#FB7A29"; // orange
+function confidenceColor(
+  c: number,
+  high: string,
+  mid: string,
+  low: string
+): string {
+  if (c >= 0.75) return high;
+  if (c >= 0.45) return mid;
+  return low;
 }
 
 function confidenceLabel(c: number) {
@@ -148,8 +173,21 @@ export function DecisionCard({
   entryAnimation = "slide",
   highlightPulse = false,
   borderGlow = true,
+  highConfidenceColor = "#0BE09B",
+  midConfidenceColor = "#0091FF",
+  lowConfidenceColor = "#FB7A29",
+  cardBackgroundColor = "#111113",
+  textPrimaryColor = "rgba(255,255,255,0.82)",
+  textSecondaryColor = "rgba(255,255,255,0.35)",
+  tradeoffAccentColor = "rgba(251,122,41,0.7)",
+  borderGlowColor,
 }: DecisionCardProps) {
-  const color = confidenceColor(confidence);
+  const color = confidenceColor(
+    confidence,
+    highConfidenceColor,
+    midConfidenceColor,
+    lowConfidenceColor
+  );
   const pct = Math.round(confidence * 100);
   const urg = urgencyConfig[urgency];
   const anim = variants[entryAnimation];
@@ -157,17 +195,22 @@ export function DecisionCard({
   const isHighConf = confidence >= 0.75;
   const isLowConf = confidence < 0.45;
 
-  const glowColor = isHighConf
-    ? "rgba(11,224,155,0.18)"
+  // Derived glow values fall back to the active confidence color when no
+  // explicit borderGlowColor override is provided.
+  const derivedGlowColor = isHighConf
+    ? `rgba(11,224,155,0.18)`
     : isLowConf
-    ? "rgba(251,122,41,0.18)"
-    : "rgba(0,145,255,0.14)";
+    ? `rgba(251,122,41,0.18)`
+    : `rgba(0,145,255,0.14)`;
 
-  const borderColor = isHighConf
-    ? "rgba(11,224,155,0.28)"
+  const derivedBorderColor = isHighConf
+    ? `rgba(11,224,155,0.28)`
     : isLowConf
-    ? "rgba(251,122,41,0.28)"
-    : "rgba(0,145,255,0.24)";
+    ? `rgba(251,122,41,0.28)`
+    : `rgba(0,145,255,0.24)`;
+
+  const glowColor = borderGlowColor ? `${borderGlowColor}2E` : derivedGlowColor;
+  const borderColor = borderGlowColor ? `${borderGlowColor}47` : derivedBorderColor;
 
   return (
     <div className="w-full flex items-center justify-center p-6 min-h-[400px]">
@@ -177,10 +220,11 @@ export function DecisionCard({
           {...anim}
           transition={{ duration: 0.45, ease: [0.32, 0.72, 0, 1] }}
           className={cn(
-            "w-full max-w-[860px] rounded-2xl border bg-[#111113] overflow-hidden",
+            "w-full max-w-[860px] rounded-2xl border overflow-hidden",
             "relative"
           )}
           style={{
+            background: cardBackgroundColor,
             borderColor: borderGlow ? borderColor : "rgba(255,255,255,0.07)",
             boxShadow: borderGlow
               ? `0 0 0 1px ${borderColor}, 0 8px 40px ${glowColor}, inset 0 1px 0 rgba(255,255,255,0.04)`
@@ -229,7 +273,10 @@ export function DecisionCard({
                   >
                     {pct}%
                   </motion.span>
-                  <span className="text-[10px] text-[rgba(255,255,255,0.35)] mt-0.5 font-mono">
+                  <span
+                    className="text-[10px] mt-0.5 font-mono"
+                    style={{ color: textSecondaryColor }}
+                  >
                     conf
                   </span>
                 </div>
@@ -282,11 +329,17 @@ export function DecisionCard({
                     className="w-1.5 h-1.5 rounded-full"
                     style={{ background: color }}
                   />
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">
+                  <span
+                    className="text-[10px] font-semibold uppercase tracking-[0.1em]"
+                    style={{ color: textSecondaryColor }}
+                  >
                     AI Recommendation
                   </span>
                 </div>
-                <p className="text-[14px] leading-[1.65] text-[rgba(255,255,255,0.82)]">
+                <p
+                  className="text-[14px] leading-[1.65]"
+                  style={{ color: textPrimaryColor }}
+                >
                   {recommendation}
                 </p>
               </div>
@@ -294,8 +347,14 @@ export function DecisionCard({
               {/* Tradeoffs */}
               <div className="p-5 flex flex-col gap-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[rgba(251,122,41,0.7)]" />
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">
+                  <div
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ background: tradeoffAccentColor }}
+                  />
+                  <span
+                    className="text-[10px] font-semibold uppercase tracking-[0.1em]"
+                    style={{ color: textSecondaryColor }}
+                  >
                     Tradeoffs &amp; Considerations
                   </span>
                 </div>
@@ -319,7 +378,10 @@ export function DecisionCard({
 
               {/* Footer actions */}
               <div className="px-5 py-3 flex items-center justify-between bg-white/[0.015]">
-                <span className="text-[11px] text-[rgba(255,255,255,0.25)] font-mono">
+                <span
+                  className="text-[11px] font-mono"
+                  style={{ color: "rgba(255,255,255,0.25)" }}
+                >
                   lumen · decision-card
                 </span>
                 <div className="flex items-center gap-2">

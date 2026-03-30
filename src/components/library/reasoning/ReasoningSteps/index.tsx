@@ -18,6 +18,34 @@ export interface ReasoningStepsProps {
   revealSpeed?: number;
   stagger?: number;
   fadeIn?: boolean;
+
+  /* ── Color props ── */
+  /** Primary accent color used for the active step, progress fill, check icon, and header dot. */
+  accentColor?: string;
+  /** Color used for the evidence block icon, label, and border. */
+  evidenceColor?: string;
+  /** Confidence bar color when value >= 0.85. */
+  confidenceHighColor?: string;
+  /** Confidence bar color when value >= 0.65 and < 0.85. */
+  confidenceMidColor?: string;
+  /** Confidence bar color when value < 0.65. */
+  confidenceLowColor?: string;
+  /** Color of the vertical timeline rail (background track). */
+  railColor?: string;
+  /** Border color of completed step nodes and cards. */
+  completedBorderColor?: string;
+  /** Background color of completed step cards. */
+  completedBgColor?: string;
+  /** Text color for the active step label. Defaults to accentColor. */
+  activeLabelColor?: string;
+  /** Text color for completed step labels. */
+  completedLabelColor?: string;
+  /** Text color for pending (future) step labels. */
+  pendingLabelColor?: string;
+  /** Text color for step detail paragraphs. */
+  detailTextColor?: string;
+  /** Text color for evidence body text. */
+  evidenceTextColor?: string;
 }
 
 /* ── Default data ── */
@@ -54,14 +82,43 @@ const DEFAULT_STEPS: ReasoningStep[] = [
 
 const DEFAULT_CONFIDENCE = [0.96, 0.89, 0.71, 0.94, 0.88];
 
+/* ── Helpers ── */
+/** Convert a hex/rgb color string to an rgba string with the given alpha. */
+function withAlpha(color: string, alpha: number): string {
+  // If already an rgba string, replace the alpha
+  const rgbaMatch = color.match(
+    /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)$/
+  );
+  if (rgbaMatch) {
+    return `rgba(${rgbaMatch[1]},${rgbaMatch[2]},${rgbaMatch[3]},${alpha})`;
+  }
+
+  // Expand 3-digit hex
+  let hex = color.replace("#", "");
+  if (hex.length === 3) {
+    hex = hex
+      .split("")
+      .map((c) => c + c)
+      .join("");
+  }
+  if (hex.length !== 6) return color; // fallback — return as-is
+
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
 /* ── Sub-components ── */
-function ConfidenceBar({ value }: { value: number }) {
-  const color =
-    value >= 0.85
-      ? "#0BE09B"
-      : value >= 0.65
-      ? "#FB7A29"
-      : "#ef4444";
+interface ConfidenceBarProps {
+  value: number;
+  highColor: string;
+  midColor: string;
+  lowColor: string;
+}
+
+function ConfidenceBar({ value, highColor, midColor, lowColor }: ConfidenceBarProps) {
+  const color = value >= 0.85 ? highColor : value >= 0.65 ? midColor : lowColor;
 
   return (
     <div className="flex items-center gap-2 mt-2">
@@ -81,12 +138,16 @@ function ConfidenceBar({ value }: { value: number }) {
   );
 }
 
-function CheckIcon() {
+interface CheckIconProps {
+  color: string;
+}
+
+function CheckIcon({ color }: CheckIconProps) {
   return (
     <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
       <path
         d="M2 5.5L4 7.5L8 3"
-        stroke="#0BE09B"
+        stroke={color}
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -104,18 +165,56 @@ export function ReasoningSteps({
   revealSpeed = 0.4,
   stagger = 0.12,
   fadeIn = true,
+
+  accentColor = "#0BE09B",
+  evidenceColor = "#0091FF",
+  confidenceHighColor = "#0BE09B",
+  confidenceMidColor = "#FB7A29",
+  confidenceLowColor = "#ef4444",
+  railColor = "rgba(255,255,255,0.06)",
+  completedBorderColor = "rgba(255,255,255,0.06)",
+  completedBgColor = "rgba(255,255,255,0.02)",
+  activeLabelColor,
+  completedLabelColor = "var(--text-primary)",
+  pendingLabelColor = "var(--text-muted)",
+  detailTextColor = "var(--text-secondary)",
+  evidenceTextColor = "var(--text-tertiary)",
 }: ReasoningStepsProps) {
   const clampedCurrent = Math.max(0, Math.min(currentStep, steps.length - 1));
+
+  // Derive accent-based values once so JSX stays readable
+  const resolvedActiveLabelColor = activeLabelColor ?? accentColor;
+
+  const activeNodeBorder = withAlpha(accentColor, 1);
+  const activeNodeBg = withAlpha(accentColor, 0.2);
+  const activeNodeShadow = `0 0 12px ${withAlpha(accentColor, 0.3)}`;
+  const activeCardBorder = withAlpha(accentColor, 0.25);
+  const activeCardBg = withAlpha(accentColor, 0.04);
+  const activeCardShadow = `0 0 24px ${withAlpha(accentColor, 0.06)}`;
+  const activeBadgeBg = withAlpha(accentColor, 0.1);
+  const activeBadgeText = withAlpha(accentColor, 0.7);
+  const pulseRingColor = withAlpha(accentColor, 0.3);
+  const progressFill = withAlpha(accentColor, 0.4);
+
+  const completedNodeBorder = withAlpha(accentColor, 0.5);
+  const completedNodeBg = withAlpha(accentColor, 0.1);
+
+  const evidenceBg = withAlpha(evidenceColor, 0.06);
+  const evidenceBorder = withAlpha(evidenceColor, 0.12);
+  const evidenceLabelColor = withAlpha(evidenceColor, 0.7);
 
   return (
     <div className="w-full max-w-[560px] mx-auto select-none">
       {/* Header */}
       <div className="flex items-center gap-2 mb-6">
-        <div className="w-1.5 h-1.5 rounded-full bg-accent-green animate-pulse" />
-        <span className="text-detail font-mono uppercase tracking-[0.1em] text-[--text-tertiary]">
+        <div
+          className="w-1.5 h-1.5 rounded-full animate-pulse"
+          style={{ backgroundColor: accentColor }}
+        />
+        <span className="text-detail font-mono uppercase tracking-[0.1em] text-white/35">
           Reasoning trace
         </span>
-        <span className="ml-auto text-detail font-mono text-[--text-muted]">
+        <span className="ml-auto text-detail font-mono text-white/25">
           {clampedCurrent + 1} / {steps.length}
         </span>
       </div>
@@ -123,20 +222,24 @@ export function ReasoningSteps({
       {/* Timeline */}
       <div className="relative pl-7">
         {/* Vertical rail */}
-        <div className="absolute left-[10px] top-0 bottom-0 w-px bg-white/[0.06]" />
+        <div
+          className="absolute left-[10px] top-0 bottom-0 w-px"
+          style={{ backgroundColor: railColor }}
+        />
 
         {/* Progress fill */}
         <motion.div
-          className="absolute left-[10px] top-0 w-px bg-accent-green/40 origin-top"
+          className="absolute left-[10px] top-0 w-px origin-top"
+          style={{
+            height: "100%",
+            transformOrigin: "top",
+            backgroundColor: progressFill,
+          }}
           initial={{ scaleY: 0 }}
           animate={{
             scaleY: steps.length > 1 ? clampedCurrent / (steps.length - 1) : 0,
           }}
           transition={{ duration: revealSpeed * 1.5, ease: "easeOut" }}
-          style={{
-            height: "100%",
-            transformOrigin: "top",
-          }}
         />
 
         <AnimatePresence initial={false}>
@@ -160,23 +263,34 @@ export function ReasoningSteps({
                 {/* Step node */}
                 <div
                   className={cn(
-                    "absolute -left-7 top-[2px] w-[18px] h-[18px] rounded-full border flex items-center justify-center transition-all duration-300 z-10",
-                    isCompleted &&
-                      "border-accent-green/50 bg-accent-green/10",
-                    isActive &&
-                      "border-accent-green bg-accent-green/20 shadow-[0_0_12px_rgba(11,224,155,0.3)]",
-                    isPending &&
-                      "border-white/10 bg-white/[0.03]"
+                    "absolute -left-7 top-[2px] w-[18px] h-[18px] rounded-full border flex items-center justify-center transition-all duration-300 z-10"
                   )}
+                  style={
+                    isCompleted
+                      ? {
+                          borderColor: completedNodeBorder,
+                          backgroundColor: completedNodeBg,
+                        }
+                      : isActive
+                      ? {
+                          borderColor: activeNodeBorder,
+                          backgroundColor: activeNodeBg,
+                          boxShadow: activeNodeShadow,
+                        }
+                      : {
+                          borderColor: "rgba(255,255,255,0.1)",
+                          backgroundColor: "rgba(255,255,255,0.03)",
+                        }
+                  }
                 >
                   {isCompleted ? (
-                    <CheckIcon />
+                    <CheckIcon color={accentColor} />
                   ) : (
                     <span
-                      className={cn(
-                        "text-[9px] font-mono font-bold",
-                        isActive ? "text-accent-green" : "text-[--text-muted]"
-                      )}
+                      className="text-[9px] font-mono font-bold"
+                      style={{
+                        color: isActive ? resolvedActiveLabelColor : "var(--text-muted)",
+                      }}
                     >
                       {i + 1}
                     </span>
@@ -185,7 +299,8 @@ export function ReasoningSteps({
                   {/* Active pulse ring */}
                   {isActive && (
                     <motion.div
-                      className="absolute inset-[-4px] rounded-full border border-accent-green/30"
+                      className="absolute inset-[-4px] rounded-full border"
+                      style={{ borderColor: pulseRingColor }}
                       animate={{ scale: [1, 1.3], opacity: [0.6, 0] }}
                       transition={{
                         duration: 1.4,
@@ -198,31 +313,47 @@ export function ReasoningSteps({
 
                 {/* Step card */}
                 <div
-                  className={cn(
-                    "rounded-lg border px-4 py-3 transition-all duration-300",
+                  className="rounded-lg border px-4 py-3 transition-all duration-300"
+                  style={
                     isActive
-                      ? "border-accent-green/25 bg-[rgba(11,224,155,0.04)] shadow-[0_0_24px_rgba(11,224,155,0.06)]"
+                      ? {
+                          borderColor: activeCardBorder,
+                          backgroundColor: activeCardBg,
+                          boxShadow: activeCardShadow,
+                        }
                       : isCompleted
-                      ? "border-white/[0.06] bg-white/[0.02]"
-                      : "border-white/[0.04] bg-transparent"
-                  )}
+                      ? {
+                          borderColor: completedBorderColor,
+                          backgroundColor: completedBgColor,
+                        }
+                      : {
+                          borderColor: "rgba(255,255,255,0.04)",
+                          backgroundColor: "transparent",
+                        }
+                  }
                 >
                   {/* Label row */}
                   <div className="flex items-center gap-2">
                     <span
-                      className={cn(
-                        "text-body font-semibold transition-colors",
-                        isActive
-                          ? "text-accent-green"
+                      className="text-body font-semibold transition-colors"
+                      style={{
+                        color: isActive
+                          ? resolvedActiveLabelColor
                           : isCompleted
-                          ? "text-[--text-primary]"
-                          : "text-[--text-muted]"
-                      )}
+                          ? completedLabelColor
+                          : pendingLabelColor,
+                      }}
                     >
                       {step.label}
                     </span>
                     {isActive && (
-                      <span className="ml-auto text-[10px] font-mono uppercase tracking-wider text-accent-green/70 bg-accent-green/10 px-1.5 py-0.5 rounded">
+                      <span
+                        className="ml-auto text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded"
+                        style={{
+                          color: activeBadgeText,
+                          backgroundColor: activeBadgeBg,
+                        }}
+                      >
                         active
                       </span>
                     )}
@@ -235,23 +366,49 @@ export function ReasoningSteps({
                       animate={{ opacity: 1, height: "auto" }}
                       transition={{ duration: revealSpeed * 0.8, ease: "easeOut" }}
                     >
-                      <p className="text-detail text-[--text-secondary] mt-1.5 leading-relaxed">
+                      <p
+                        className="text-detail mt-1.5 leading-relaxed"
+                        style={{ color: detailTextColor }}
+                      >
                         {step.detail}
                       </p>
 
                       {/* Evidence */}
                       {showEvidence && step.evidence && (
-                        <div className="mt-2 px-2.5 py-1.5 rounded-md bg-[rgba(0,145,255,0.06)] border border-[rgba(0,145,255,0.12)]">
+                        <div
+                          className="mt-2 px-2.5 py-1.5 rounded-md border"
+                          style={{
+                            backgroundColor: evidenceBg,
+                            borderColor: evidenceBorder,
+                          }}
+                        >
                           <div className="flex items-center gap-1.5 mb-0.5">
                             <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
-                              <circle cx="4.5" cy="4.5" r="3.5" stroke="#0091FF" strokeWidth="1" />
-                              <path d="M4.5 3.5V5M4.5 6V6.2" stroke="#0091FF" strokeWidth="1" strokeLinecap="round" />
+                              <circle
+                                cx="4.5"
+                                cy="4.5"
+                                r="3.5"
+                                stroke={evidenceColor}
+                                strokeWidth="1"
+                              />
+                              <path
+                                d="M4.5 3.5V5M4.5 6V6.2"
+                                stroke={evidenceColor}
+                                strokeWidth="1"
+                                strokeLinecap="round"
+                              />
                             </svg>
-                            <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#0091FF]/70">
+                            <span
+                              className="text-[10px] font-semibold uppercase tracking-[0.08em]"
+                              style={{ color: evidenceLabelColor }}
+                            >
                               Evidence
                             </span>
                           </div>
-                          <p className="text-[11px] font-mono text-[--text-tertiary] leading-relaxed">
+                          <p
+                            className="text-[11px] font-mono leading-relaxed"
+                            style={{ color: evidenceTextColor }}
+                          >
                             {step.evidence}
                           </p>
                         </div>
@@ -259,7 +416,12 @@ export function ReasoningSteps({
 
                       {/* Confidence bar */}
                       {confidencePerStep[i] !== undefined && (
-                        <ConfidenceBar value={confidencePerStep[i]} />
+                        <ConfidenceBar
+                          value={confidencePerStep[i]}
+                          highColor={confidenceHighColor}
+                          midColor={confidenceMidColor}
+                          lowColor={confidenceLowColor}
+                        />
                       )}
                     </motion.div>
                   )}

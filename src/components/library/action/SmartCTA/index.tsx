@@ -19,17 +19,51 @@ export interface SmartCTAProps {
   sublabel?: string;
   pressScale?: number;
   glowOnUrgent?: boolean;
+  glowIntensity?: number;
   loadingAnimation?: LoadingAnimation;
   onAction?: () => void | Promise<void>;
+  /* ── Color props ── */
+  primaryColor?: string;
+  secondaryColor?: string;
+  destructiveColor?: string;
+  cancelTextColor?: string;
 }
 
-/* ── Color config ───────────────────────────────────────────── */
+/* ── Helpers ────────────────────────────────────────────────── */
 
-const actionColors: Record<ActionType, { base: string; glow: string; border: string; bg: string }> = {
-  primary:     { base: "#0BE09B", glow: "rgba(11,224,155,0.28)",  border: "rgba(11,224,155,0.35)",  bg: "rgba(11,224,155,0.10)"  },
-  secondary:   { base: "#0091FF", glow: "rgba(0,145,255,0.28)",   border: "rgba(0,145,255,0.35)",   bg: "rgba(0,145,255,0.10)"   },
-  destructive: { base: "#FB7A29", glow: "rgba(251,122,41,0.28)",  border: "rgba(251,122,41,0.35)",  bg: "rgba(251,122,41,0.10)"  },
-};
+/** Parse a 6-digit hex string into its R, G, B integer components. */
+function hexToRgb(hex: string): [number, number, number] {
+  const clean = hex.replace(/^#/, "");
+  const full =
+    clean.length === 3
+      ? clean
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : clean;
+  const int = parseInt(full, 16);
+  return [(int >> 16) & 255, (int >> 8) & 255, int & 255];
+}
+
+function buildColors(hex: string): { base: string; glow: string; border: string; bg: string } {
+  const [r, g, b] = hexToRgb(hex);
+  return {
+    base:   hex,
+    glow:   `rgba(${r},${g},${b},0.28)`,
+    border: `rgba(${r},${g},${b},0.35)`,
+    bg:     `rgba(${r},${g},${b},0.10)`,
+  };
+}
+
+function buildGradient(hex: string, intensity: number): string {
+  const [r, g, b] = hexToRgb(hex);
+  return `linear-gradient(135deg, rgba(${r},${g},${b},${0.14 * intensity}) 0%, rgba(${r},${g},${b},${0.06 * intensity}) 100%)`;
+}
+
+function buildGlow(hex: string, glowIntensity: number): string {
+  const [r, g, b] = hexToRgb(hex);
+  return `rgba(${r},${g},${b},${glowIntensity})`;
+}
 
 const urgencyIntensity: Record<Urgency, number> = {
   low: 0.5,
@@ -131,23 +165,40 @@ export function SmartCTA({
   sublabel = "This will apply the suggested changes",
   pressScale = 0.96,
   glowOnUrgent = true,
+  glowIntensity = 0.28,
   loadingAnimation = "spinner",
   onAction,
+  primaryColor = "#0BE09B",
+  secondaryColor = "#0091FF",
+  destructiveColor = "#FB7A29",
+  cancelTextColor = "rgba(255,255,255,0.35)",
 }: SmartCTAProps) {
   const [ctaState, setCtaState] = useState<CTAState>("idle");
 
-  const colors = actionColors[actionType];
-  const intensity = urgencyIntensity[urgency];
   const safePressScale = Math.max(0.9, Math.min(1, pressScale));
-
+  const intensity = urgencyIntensity[urgency];
   const isUrgentGlow = glowOnUrgent && urgency === "high";
 
-  // Gradient based on actionType + urgency
-  const gradientMap: Record<ActionType, string> = {
-    primary:     `linear-gradient(135deg, rgba(11,224,155,${0.14 * intensity}) 0%, rgba(11,224,155,${0.06 * intensity}) 100%)`,
-    secondary:   `linear-gradient(135deg, rgba(0,145,255,${0.14 * intensity}) 0%, rgba(0,145,255,${0.06 * intensity}) 100%)`,
-    destructive: `linear-gradient(135deg, rgba(251,122,41,${0.14 * intensity}) 0%, rgba(251,122,41,${0.06 * intensity}) 100%)`,
+  /* ── Resolve base hex per actionType ── */
+  const actionBaseHex: Record<ActionType, string> = {
+    primary: primaryColor,
+    secondary: secondaryColor,
+    destructive: destructiveColor,
   };
+
+  const baseHex = actionBaseHex[actionType];
+  const colors = buildColors(baseHex);
+  const resolvedGlow = buildGlow(baseHex, glowIntensity);
+
+  /* ── Urgency dot colors track the three action bases ── */
+  const urgencyDotColor: Record<Urgency, string> = {
+    low:    primaryColor,
+    medium: secondaryColor,
+    high:   destructiveColor,
+  };
+
+  /* ── Gradient uses the resolved base + urgency intensity ── */
+  const gradient = buildGradient(baseHex, intensity);
 
   const handleClick = useCallback(async () => {
     if (ctaState === "loading" || ctaState === "success") return;
@@ -259,14 +310,6 @@ export function SmartCTA({
     );
   };
 
-  /* ── Urgency dot ── */
-
-  const urgencyDotColor: Record<Urgency, string> = {
-    low:    "#0BE09B",
-    medium: "#0091FF",
-    high:   "#FB7A29",
-  };
-
   return (
     <div className="relative flex flex-col items-start gap-2">
       {/* Urgency indicator row */}
@@ -303,17 +346,17 @@ export function SmartCTA({
             : ""
         )}
         style={{
-          background: gradientMap[actionType],
+          background: gradient,
           borderColor: colors.border,
           boxShadow: isUrgentGlow
-            ? `0 0 0 1px ${colors.border}, 0 4px 24px ${colors.glow}`
+            ? `0 0 0 1px ${colors.border}, 0 4px 24px ${resolvedGlow}`
             : `0 0 0 1px ${colors.border}`,
           minWidth: 220,
         }}
         whileHover={
           ctaState === "idle" || ctaState === "confirm"
             ? {
-                boxShadow: `0 0 0 1px ${colors.border}, 0 6px 32px ${colors.glow}`,
+                boxShadow: `0 0 0 1px ${colors.border}, 0 6px 32px ${resolvedGlow}`,
                 y: -1,
               }
             : {}
@@ -337,7 +380,7 @@ export function SmartCTA({
             animate={{ opacity: [0.3, 0.6, 0.3] }}
             transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
             style={{
-              background: `radial-gradient(ellipse at 50% 0%, ${colors.glow} 0%, transparent 70%)`,
+              background: `radial-gradient(ellipse at 50% 0%, ${resolvedGlow} 0%, transparent 70%)`,
             }}
           />
         )}
@@ -354,7 +397,8 @@ export function SmartCTA({
       <AnimatePresence>
         {ctaState === "confirm" && (
           <motion.button
-            className="text-[11px] font-medium text-[rgba(255,255,255,0.35)] hover:text-[rgba(255,255,255,0.6)] transition-colors duration-150 pl-1"
+            className="text-[11px] font-medium transition-colors duration-150 pl-1"
+            style={{ color: cancelTextColor }}
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
