@@ -1,4 +1,4 @@
-export const decisionCardCode: string = `"use client";
+const DECISION_CARD_SOURCE = `"use client";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -197,3 +197,41 @@ export function DecisionCard({
     </div>
   );
 }`;
+
+export function generateDecisionCardCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    confidence: 0.82,
+    urgency: "high",
+    entryAnimation: "slide",
+    highlightPulse: false,
+    borderGlow: true,
+    highConfidenceColor: "#0BE09B",
+    midConfidenceColor: "#0091FF",
+    lowConfidenceColor: "#FB7A29",
+    cardBackgroundColor: "#111113",
+    textPrimaryColor: "#D1D1D1",
+    textSecondaryColor: "#5A5A5A",
+    tradeoffAccentColor: "#FB7A29",
+    borderGlowColor: "#0BE09B",
+    glowIntensity: 0.5,
+  };
+
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+
+  return `// Usage
+<DecisionCard${propsBlock}/>
+
+// Full source code below...
+${DECISION_CARD_SOURCE}`;
+}
+
+export const decisionCardCode = generateDecisionCardCode({});

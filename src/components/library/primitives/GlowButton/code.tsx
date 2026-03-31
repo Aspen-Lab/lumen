@@ -1,4 +1,4 @@
-export const glowButtonCode: string = `"use client";
+const STATIC_SOURCE = `"use client";
 
 import { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -251,5 +251,28 @@ export function GlowButton({
       </span>
     </motion.button>
   );
+}`;
+
+export function generateGlowButtonCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    variant: "primary",
+    size: "md",
+    glowFrom: "#7C5CFC",
+    glowTo: "#F97316",
+    glowIntensity: 0.75,
+    loading: false,
+    disabled: false,
+  };
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+  return `// Usage\n<GlowButton label="Click me"${propsBlock}/>\n\n${STATIC_SOURCE}`;
 }
-`;
+
+export const glowButtonCode: string = generateGlowButtonCode({});

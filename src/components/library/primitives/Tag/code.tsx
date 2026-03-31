@@ -1,4 +1,4 @@
-export const tagCode = `"use client";
+const STATIC_SOURCE = `"use client";
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -53,3 +53,23 @@ export function Tag({ label, color = "#FFFFFF", removable = false, onRemove, cla
   );
 }
 `;
+
+export function generateTagCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    label: "design",
+    removable: false,
+    color: "#0BE09B",
+  };
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+  return `// Usage\n<Tag${propsBlock}/>\n\n${STATIC_SOURCE}`;
+}
+
+export const tagCode = generateTagCode({});

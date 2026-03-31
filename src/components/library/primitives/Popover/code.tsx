@@ -1,4 +1,4 @@
-export const popoverCode = `"use client";
+const STATIC_SOURCE = `"use client";
 
 import {
   ReactNode,
@@ -112,3 +112,22 @@ export function Popover({
   );
 }
 `;
+
+export function generatePopoverCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    side: "bottom",
+    align: "start",
+  };
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+  return `// Usage\n<Popover${propsBlock}/>\n\n${STATIC_SOURCE}`;
+}
+
+export const popoverCode = generatePopoverCode({});

@@ -1,4 +1,4 @@
-export const reasoningStepsCode = `"use client";
+const REASONING_STEPS_SOURCE = `"use client";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -186,3 +186,45 @@ export function ReasoningSteps({
     </div>
   );
 }`;
+
+export function generateReasoningStepsCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    currentStep: 2,
+    showEvidence: true,
+    revealSpeed: 0.4,
+    stagger: 0.12,
+    fadeIn: true,
+    accentColor: "#0BE09B",
+    evidenceColor: "#0091FF",
+    confidenceHighColor: "#0BE09B",
+    confidenceMidColor: "#FB7A29",
+    confidenceLowColor: "#ef4444",
+    railColor: "#0f0f0f",
+    completedBorderColor: "#1a1a1a",
+    completedBgColor: "#0d0d0d",
+    activeLabelColor: "#0BE09B",
+    completedLabelColor: "#ffffff",
+    pendingLabelColor: "#555555",
+    detailTextColor: "#888888",
+    evidenceTextColor: "#666666",
+  };
+
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+
+  return `// Usage
+<ReasoningSteps${propsBlock}/>
+
+// Full source code below...
+${REASONING_STEPS_SOURCE}`;
+}
+
+export const reasoningStepsCode = generateReasoningStepsCode({});

@@ -1,4 +1,4 @@
-export const textInputCode = `"use client";
+const STATIC_SOURCE = `"use client";
 
 import { useRef, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
@@ -88,3 +88,26 @@ export function TextInput({
   );
 }
 `;
+
+export function generateTextInputCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    placeholder: "Type something…",
+    multiline: false,
+    rows: 3,
+    bgColor: "rgba(255,255,255,0.04)",
+    textColor: "rgba(255,255,255,0.85)",
+    placeholderColor: "rgba(255,255,255,0.25)",
+  };
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+  return `// Usage\n<TextInput${propsBlock}/>\n\n${STATIC_SOURCE}`;
+}
+
+export const textInputCode = generateTextInputCode({});

@@ -1,4 +1,4 @@
-export const insightStackCode = `"use client";
+const INSIGHT_STACK_SOURCE = `"use client";
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -255,3 +255,42 @@ export function InsightStack({
     </div>
   );
 }`;
+
+export function generateInsightStackCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    priorityOrder: true,
+    highlightTop: true,
+    stackOffset: 4,
+    expandSpeed: 0.35,
+    parallax: true,
+    highlightColor: "#0BE09B",
+    accentColor: "#0091FF",
+    cardBgColor: "rgba(255,255,255,0.02)",
+    cardBorderColor: "rgba(255,255,255,0.07)",
+    titleColor: "rgba(255,255,255,0.75)",
+    summaryColor: "rgba(255,255,255,0.45)",
+    detailColor: "rgba(255,255,255,0.55)",
+    priorityBadgeColor: "rgba(255,255,255,0.3)",
+    headerLabelColor: "rgba(255,255,255,0.35)",
+    cardOpacity: 0.8,
+  };
+
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+
+  return `// Usage
+<InsightStack${propsBlock}/>
+
+// Full source code below...
+${INSIGHT_STACK_SOURCE}`;
+}
+
+export const insightStackCode = generateInsightStackCode({});

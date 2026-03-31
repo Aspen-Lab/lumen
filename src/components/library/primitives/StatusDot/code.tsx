@@ -1,4 +1,4 @@
-export const statusDotCode = `"use client";
+const STATIC_SOURCE = `"use client";
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -69,3 +69,24 @@ export function StatusDot({
   );
 }
 `;
+
+export function generateStatusDotCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    state: "active",
+    size: "md",
+    pulse: false,
+    color: "#0BE09B",
+  };
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+  return `// Usage\n<StatusDot${propsBlock}/>\n\n${STATIC_SOURCE}`;
+}
+
+export const statusDotCode = generateStatusDotCode({});

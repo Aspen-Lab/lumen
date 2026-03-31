@@ -1,4 +1,4 @@
-export const thinkingLoaderCode = `"use client";
+const THINKING_LOADER_SOURCE = `"use client";
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -151,3 +151,37 @@ export function ThinkingLoader({
   );
 }
 `;
+
+export function generateThinkingLoaderCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    stage: "thinking",
+    showLabel: true,
+    pulseSpeed: 1.2,
+    blur: 0,
+    glowIntensity: 0.6,
+    accentColor: "#0BE09B",
+    glowColor: "#0BE09B",
+    textColor: "#8B9EB0",
+    bgColor: "#1A1F2E",
+    borderColor: "#2A3042",
+  };
+
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+
+  return `// Usage
+<ThinkingLoader${propsBlock}/>
+
+// Full source code below...
+${THINKING_LOADER_SOURCE}`;
+}
+
+export const thinkingLoaderCode = generateThinkingLoaderCode({});

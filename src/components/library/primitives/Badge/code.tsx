@@ -1,4 +1,4 @@
-export const badgeCode = `"use client";
+const STATIC_SOURCE = `"use client";
 
 import { cn } from "@/lib/utils";
 
@@ -35,7 +35,7 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
 
 export function Badge({
   label,
-  variant = "default",
+  variant = "success",
   size = "md",
   color,
   dot = false,
@@ -86,5 +86,26 @@ export function Badge({
       {label}
     </span>
   );
+}`;
+
+export function generateBadgeCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    variant: "success",
+    size: "md",
+    color: "#0BE09B",
+    dot: false,
+    mono: false,
+  };
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+  return `// Usage\n<Badge label="Status"${propsBlock}/>\n\n${STATIC_SOURCE}`;
 }
-`;
+
+export const badgeCode = generateBadgeCode({});

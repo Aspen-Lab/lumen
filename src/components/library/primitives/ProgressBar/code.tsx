@@ -1,4 +1,4 @@
-export const progressBarCode: string = `"use client";
+const STATIC_SOURCE = `"use client";
 
 import { motion, useSpring, useTransform } from "framer-motion";
 import { useEffect } from "react";
@@ -75,3 +75,26 @@ export function ProgressBar({
     </div>
   );
 }`;
+
+export function generateProgressBarCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    value: 0.6,
+    height: 4,
+    rounded: true,
+    animated: false,
+    color: "#0BE09B",
+    trackColor: "rgba(255,255,255,0.06)",
+  };
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+  return `// Usage\n<ProgressBar${propsBlock}/>\n\n${STATIC_SOURCE}`;
+}
+
+export const progressBarCode = generateProgressBarCode({});

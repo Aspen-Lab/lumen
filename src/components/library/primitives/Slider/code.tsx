@@ -1,4 +1,4 @@
-export const sliderCode = `"use client";
+const STATIC_SOURCE = `"use client";
 
 import { cn } from "@/lib/utils";
 
@@ -100,5 +100,30 @@ export function Slider({
       \`}</style>
     </div>
   );
+}`;
+
+export function generateSliderCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    min: 0,
+    max: 100,
+    step: 1,
+    label: "Volume",
+    showValue: true,
+    trackColor: "#0BE09B",
+    thumbColor: "#FFFFFF",
+  };
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+  const min = props.min ?? defaults.min;
+  const max = props.max ?? defaults.max;
+  return `// Usage\n<Slider\n  value={50}\n  onChange={setValue}\n  min={${min}}\n  max={${max}}${propsBlock}/>\n\n${STATIC_SOURCE}`;
 }
-`;
+
+export const sliderCode = generateSliderCode({});

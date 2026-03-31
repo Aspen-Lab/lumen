@@ -1,4 +1,4 @@
-export const ghostButtonCode = `"use client";
+const STATIC_SOURCE = `"use client";
 
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
@@ -89,5 +89,25 @@ export function GhostButton({
       <span className={cn("font-medium leading-none", s.textSize)}>{label}</span>
     </motion.button>
   );
+}`;
+
+export function generateGhostButtonCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    label: "Button",
+    size: "md",
+    color: "#FFFFFF",
+  };
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+  const labelProp = typeof props.label === "string" ? props.label : "Button";
+  return `// Usage\n<GhostButton label="${labelProp}"${propsBlock}/>\n\n${STATIC_SOURCE}`;
 }
-`;
+
+export const ghostButtonCode = generateGhostButtonCode({});

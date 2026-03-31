@@ -1,4 +1,4 @@
-export const promptInputCode = `"use client";
+const STATIC_SOURCE = `"use client";
 
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -123,3 +123,29 @@ export function PromptInput({
     </div>
   );
 }`;
+
+export function generatePromptInputCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    placeholder: "Ask anything...",
+    glowIntensity: 0.6,
+    glowSpeed: 3,
+    showPrompts: true,
+    showAttach: true,
+    showMic: true,
+    borderRadius: 24,
+    accentFrom: "#7C5CFC",
+    accentTo: "#F97316",
+  };
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+  return `// Usage\n<PromptInput${propsBlock}/>\n\n${STATIC_SOURCE}`;
+}
+
+export const promptInputCode = generatePromptInputCode({});

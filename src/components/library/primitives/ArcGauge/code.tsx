@@ -1,4 +1,4 @@
-export const arcGaugeCode = `"use client";
+const STATIC_SOURCE = `"use client";
 
 import { useEffect } from "react";
 import { motion, useSpring, useTransform } from "framer-motion";
@@ -117,3 +117,27 @@ export function ArcGauge({
   );
 }
 `;
+
+export function generateArcGaugeCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    value: 0.65,
+    size: 160,
+    strokeWidth: 8,
+    showLabel: true,
+    animated: true,
+    color: "#0BE09B",
+    trackColor: "rgba(255,255,255,0.06)",
+  };
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+  return `// Usage\n<ArcGauge${propsBlock}/>\n\n${STATIC_SOURCE}`;
+}
+
+export const arcGaugeCode = generateArcGaugeCode({});

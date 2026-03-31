@@ -1,4 +1,4 @@
-export const tooltipCode = `"use client";
+const STATIC_SOURCE = `"use client";
 
 import { useState, useRef, ReactNode, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -91,3 +91,22 @@ export function Tooltip({ content, side = "top", children, className }: TooltipP
   );
 }
 `;
+
+export function generateTooltipCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    content: "Helpful hint",
+    side: "top",
+  };
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+  return `// Usage\n<Tooltip${propsBlock}/>\n\n${STATIC_SOURCE}`;
+}
+
+export const tooltipCode = generateTooltipCode({});

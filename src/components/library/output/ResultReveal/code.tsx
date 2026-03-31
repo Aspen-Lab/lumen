@@ -1,4 +1,4 @@
-export const resultRevealCode: string = `"use client";
+const RESULT_REVEAL_SOURCE = `"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
@@ -214,3 +214,37 @@ export function ResultReveal({
     </div>
   );
 }`;
+
+export function generateResultRevealCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    revealMode: "progressive",
+    blurAmount: 12,
+    revealDuration: 0.8,
+    stagger: 0.18,
+    accentColor: "#0BE09B",
+    cardBgColor: "#111113",
+    headerColor: "rgba(255,255,255,0.30)",
+    progressBarColor: "rgba(255,255,255,0.06)",
+    textColor: "rgba(255,255,255,0.70)",
+    sectionTitleColor: "rgba(255,255,255,0.35)",
+  };
+
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+
+  return `// Usage
+<ResultReveal${propsBlock}/>
+
+// Full source code below...
+${RESULT_REVEAL_SOURCE}`;
+}
+
+export const resultRevealCode = generateResultRevealCode({});

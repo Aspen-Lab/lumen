@@ -1,4 +1,4 @@
-export const progressiveBlurRevealCode = `"use client";
+const STATIC_SOURCE = `"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
@@ -247,3 +247,25 @@ export function ProgressiveBlurReveal({
     </div>
   );
 }`;
+
+export function generateProgressiveBlurRevealCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    revealTrigger: "click",
+    blurStart: 12,
+    blurEnd: 0,
+    transitionCurve: "ease",
+    duration: 0.7,
+  };
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+  return `// Usage\n<ProgressiveBlurReveal${propsBlock}/>\n\n${STATIC_SOURCE}`;
+}
+
+export const progressiveBlurRevealCode = generateProgressiveBlurRevealCode({});

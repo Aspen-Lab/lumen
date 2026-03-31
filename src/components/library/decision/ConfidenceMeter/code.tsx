@@ -1,4 +1,4 @@
-export const confidenceMeterCode = `"use client";
+const CONFIDENCE_METER_SOURCE = `"use client";
 
 import { useEffect, useState } from "react";
 import { motion, useSpring, useTransform } from "framer-motion";
@@ -155,5 +155,38 @@ export function ConfidenceMeter({
       )}
     </div>
   );
+}`;
+
+export function generateConfidenceMeterCode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    confidence: 0.72,
+    fillSpeed: 1,
+    overshoot: 0.08,
+    glowOnHigh: true,
+    highColor: "#0BE09B",
+    midColor: "#FB7A29",
+    lowColor: "#EF4444",
+    trackColor: "#FFFFFF0F",
+    labelColor: "",
+    arcOpacity: 0.9,
+  };
+
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+
+  return `// Usage
+<ConfidenceMeter${propsBlock}/>
+
+// Full source code below...
+${CONFIDENCE_METER_SOURCE}`;
 }
-`;
+
+export const confidenceMeterCode = generateConfidenceMeterCode({});

@@ -1,4 +1,4 @@
-export const smartCTACode: string = `"use client";
+const SMART_CTA_SOURCE = `"use client";
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -250,5 +250,39 @@ export function SmartCTA({
       </AnimatePresence>
     </div>
   );
+}`;
+
+export function generateSmartCTACode(props: Record<string, unknown>): string {
+  const defaults: Record<string, unknown> = {
+    urgency: "medium",
+    actionType: "primary",
+    confirmRequired: false,
+    pressScale: 0.96,
+    loadingAnimation: "spinner",
+    glowOnUrgent: true,
+    glowIntensity: 0.28,
+    primaryColor: "#0BE09B",
+    secondaryColor: "#0091FF",
+    destructiveColor: "#FB7A29",
+    cancelTextColor: "#FFFFFF",
+  };
+
+  const customProps = Object.entries(props)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    })
+    .join("\n");
+
+  const propsBlock = customProps ? `\n${customProps}\n` : "";
+
+  return `// Usage
+<SmartCTA${propsBlock}/>
+
+// Full source code below...
+${SMART_CTA_SOURCE}`;
 }
-`;
+
+export const smartCTACode = generateSmartCTACode({});

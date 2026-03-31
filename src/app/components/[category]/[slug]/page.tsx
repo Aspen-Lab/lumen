@@ -14,101 +14,101 @@ import { CodeHighlight } from "@/components/site/CodeHighlight";
 import { ThinkingLoader } from "@/components/library/reasoning/ThinkingLoader";
 import { ThinkingLoaderMobile } from "@/components/library/reasoning/ThinkingLoader/mobile";
 import { thinkingLoaderControls } from "@/components/library/reasoning/ThinkingLoader/controls";
-import { thinkingLoaderCode } from "@/components/library/reasoning/ThinkingLoader/code";
+import { generateThinkingLoaderCode } from "@/components/library/reasoning/ThinkingLoader/code";
 
 import { ReasoningSteps } from "@/components/library/reasoning/ReasoningSteps";
 import { ReasoningStepsMobile } from "@/components/library/reasoning/ReasoningSteps/mobile";
 import { reasoningStepsControls } from "@/components/library/reasoning/ReasoningSteps/controls";
-import { reasoningStepsCode } from "@/components/library/reasoning/ReasoningSteps/code";
+import { generateReasoningStepsCode } from "@/components/library/reasoning/ReasoningSteps/code";
 
 import { DecisionCard } from "@/components/library/decision/DecisionCard";
 import { DecisionCardMobile } from "@/components/library/decision/DecisionCard/mobile";
 import { decisionCardControls } from "@/components/library/decision/DecisionCard/controls";
-import { decisionCardCode } from "@/components/library/decision/DecisionCard/code";
+import { generateDecisionCardCode } from "@/components/library/decision/DecisionCard/code";
 
 import { ConfidenceMeter } from "@/components/library/decision/ConfidenceMeter";
 import { ConfidenceMeterMobile } from "@/components/library/decision/ConfidenceMeter/mobile";
 import { confidenceMeterControls } from "@/components/library/decision/ConfidenceMeter/controls";
-import { confidenceMeterCode } from "@/components/library/decision/ConfidenceMeter/code";
+import { generateConfidenceMeterCode } from "@/components/library/decision/ConfidenceMeter/code";
 
 import { ResultReveal } from "@/components/library/output/ResultReveal";
 import { ResultRevealMobile } from "@/components/library/output/ResultReveal/mobile";
 import { resultRevealControls } from "@/components/library/output/ResultReveal/controls";
-import { resultRevealCode } from "@/components/library/output/ResultReveal/code";
+import { generateResultRevealCode } from "@/components/library/output/ResultReveal/code";
 
 import { InsightStack } from "@/components/library/output/InsightStack";
 import { InsightStackMobile } from "@/components/library/output/InsightStack/mobile";
 import { insightStackControls } from "@/components/library/output/InsightStack/controls";
-import { insightStackCode } from "@/components/library/output/InsightStack/code";
+import { generateInsightStackCode } from "@/components/library/output/InsightStack/code";
 
 import { SmartCTA } from "@/components/library/action/SmartCTA";
 import { SmartCTAMobile } from "@/components/library/action/SmartCTA/mobile";
 import { smartCTAControls } from "@/components/library/action/SmartCTA/controls";
-import { smartCTACode } from "@/components/library/action/SmartCTA/code";
+import { generateSmartCTACode } from "@/components/library/action/SmartCTA/code";
 
 import { ProgressiveBlurReveal } from "@/components/library/motion/ProgressiveBlurReveal";
 import { ProgressiveBlurRevealMobile } from "@/components/library/motion/ProgressiveBlurReveal/mobile";
 import { progressiveBlurRevealControls } from "@/components/library/motion/ProgressiveBlurReveal/controls";
-import { progressiveBlurRevealCode } from "@/components/library/motion/ProgressiveBlurReveal/code";
+import { generateProgressiveBlurRevealCode } from "@/components/library/motion/ProgressiveBlurReveal/code";
 
 import { PromptInput } from "@/components/library/action/PromptInput";
 import { PromptInputMobile } from "@/components/library/action/PromptInput/mobile";
 import { promptInputControls } from "@/components/library/action/PromptInput/controls";
-import { promptInputCode } from "@/components/library/action/PromptInput/code";
+import { generatePromptInputCode } from "@/components/library/action/PromptInput/code";
 
 import { GlowButton } from "@/components/library/primitives/GlowButton";
 import { glowButtonControls } from "@/components/library/primitives/GlowButton/controls";
-import { glowButtonCode } from "@/components/library/primitives/GlowButton/code";
+import { generateGlowButtonCode } from "@/components/library/primitives/GlowButton/code";
 
 import { GhostButton } from "@/components/library/primitives/GhostButton";
 import { ghostButtonControls } from "@/components/library/primitives/GhostButton/controls";
-import { ghostButtonCode } from "@/components/library/primitives/GhostButton/code";
+import { generateGhostButtonCode } from "@/components/library/primitives/GhostButton/code";
 
 import { Toggle as TogglePrimitive } from "@/components/library/primitives/Toggle";
 import { toggleControls } from "@/components/library/primitives/Toggle/controls";
-import { toggleCode } from "@/components/library/primitives/Toggle/code";
+import { generateToggleCode } from "@/components/library/primitives/Toggle/code";
 
 import { Slider as SliderPrimitive } from "@/components/library/primitives/Slider";
 import { sliderControls } from "@/components/library/primitives/Slider/controls";
-import { sliderCode } from "@/components/library/primitives/Slider/code";
+import { generateSliderCode } from "@/components/library/primitives/Slider/code";
 
 import { Badge } from "@/components/library/primitives/Badge";
 import { badgeControls } from "@/components/library/primitives/Badge/controls";
-import { badgeCode } from "@/components/library/primitives/Badge/code";
+import { generateBadgeCode } from "@/components/library/primitives/Badge/code";
 
 import { StatusDot } from "@/components/library/primitives/StatusDot";
 import { statusDotControls } from "@/components/library/primitives/StatusDot/controls";
-import { statusDotCode } from "@/components/library/primitives/StatusDot/code";
+import { generateStatusDotCode } from "@/components/library/primitives/StatusDot/code";
 
 import { ProgressBar } from "@/components/library/primitives/ProgressBar";
 import { progressBarControls } from "@/components/library/primitives/ProgressBar/controls";
-import { progressBarCode } from "@/components/library/primitives/ProgressBar/code";
+import { generateProgressBarCode } from "@/components/library/primitives/ProgressBar/code";
 
 import { ArcGauge } from "@/components/library/primitives/ArcGauge";
 import { arcGaugeControls } from "@/components/library/primitives/ArcGauge/controls";
-import { arcGaugeCode } from "@/components/library/primitives/ArcGauge/code";
+import { generateArcGaugeCode } from "@/components/library/primitives/ArcGauge/code";
 
 import { TextInput } from "@/components/library/primitives/TextInput";
 import { textInputControls } from "@/components/library/primitives/TextInput/controls";
-import { textInputCode } from "@/components/library/primitives/TextInput/code";
+import { generateTextInputCode } from "@/components/library/primitives/TextInput/code";
 
 import { Tooltip as TooltipPrimitive } from "@/components/library/primitives/Tooltip";
 import { tooltipControls } from "@/components/library/primitives/Tooltip/controls";
-import { tooltipCode } from "@/components/library/primitives/Tooltip/code";
+import { generateTooltipCode } from "@/components/library/primitives/Tooltip/code";
 
 import { Popover as PopoverPrimitive } from "@/components/library/primitives/Popover";
 import { popoverControls } from "@/components/library/primitives/Popover/controls";
-import { popoverCode } from "@/components/library/primitives/Popover/code";
+import { generatePopoverCode } from "@/components/library/primitives/Popover/code";
 
 import { Tag } from "@/components/library/primitives/Tag";
 import { tagControls } from "@/components/library/primitives/Tag/controls";
-import { tagCode } from "@/components/library/primitives/Tag/code";
+import { generateTagCode } from "@/components/library/primitives/Tag/code";
 
 interface ComponentEntry {
   desktop: React.ComponentType<Record<string, unknown>>;
   mobile: React.ComponentType<Record<string, unknown>>;
   controls: ControlDefinition[];
-  code: string;
+  code: string | ((props: Record<string, unknown>) => string);
 }
 
 const componentMap: Record<string, ComponentEntry> = {
@@ -116,127 +116,127 @@ const componentMap: Record<string, ComponentEntry> = {
     desktop: ThinkingLoader as React.ComponentType<Record<string, unknown>>,
     mobile: ThinkingLoaderMobile as React.ComponentType<Record<string, unknown>>,
     controls: thinkingLoaderControls,
-    code: thinkingLoaderCode,
+    code: generateThinkingLoaderCode,
   },
   "reasoning-steps": {
     desktop: ReasoningSteps as React.ComponentType<Record<string, unknown>>,
     mobile: ReasoningStepsMobile as React.ComponentType<Record<string, unknown>>,
     controls: reasoningStepsControls,
-    code: reasoningStepsCode,
+    code: generateReasoningStepsCode,
   },
   "decision-card": {
     desktop: DecisionCard as React.ComponentType<Record<string, unknown>>,
     mobile: DecisionCardMobile as React.ComponentType<Record<string, unknown>>,
     controls: decisionCardControls,
-    code: decisionCardCode,
+    code: generateDecisionCardCode,
   },
   "confidence-meter": {
     desktop: ConfidenceMeter as React.ComponentType<Record<string, unknown>>,
     mobile: ConfidenceMeterMobile as React.ComponentType<Record<string, unknown>>,
     controls: confidenceMeterControls,
-    code: confidenceMeterCode,
+    code: generateConfidenceMeterCode,
   },
   "result-reveal": {
     desktop: ResultReveal as React.ComponentType<Record<string, unknown>>,
     mobile: ResultRevealMobile as React.ComponentType<Record<string, unknown>>,
     controls: resultRevealControls,
-    code: resultRevealCode,
+    code: generateResultRevealCode,
   },
   "insight-stack": {
     desktop: InsightStack as React.ComponentType<Record<string, unknown>>,
     mobile: InsightStackMobile as React.ComponentType<Record<string, unknown>>,
     controls: insightStackControls,
-    code: insightStackCode,
+    code: generateInsightStackCode,
   },
   "smart-cta": {
     desktop: SmartCTA as React.ComponentType<Record<string, unknown>>,
     mobile: SmartCTAMobile as React.ComponentType<Record<string, unknown>>,
     controls: smartCTAControls,
-    code: smartCTACode,
+    code: generateSmartCTACode,
   },
   "progressive-blur-reveal": {
     desktop: ProgressiveBlurReveal as React.ComponentType<Record<string, unknown>>,
     mobile: ProgressiveBlurRevealMobile as React.ComponentType<Record<string, unknown>>,
     controls: progressiveBlurRevealControls,
-    code: progressiveBlurRevealCode,
+    code: generateProgressiveBlurRevealCode,
   },
   "prompt-input": {
     desktop: PromptInput as React.ComponentType<Record<string, unknown>>,
     mobile: PromptInputMobile as React.ComponentType<Record<string, unknown>>,
     controls: promptInputControls,
-    code: promptInputCode,
+    code: generatePromptInputCode,
   },
   "glow-button": {
     desktop: GlowButton as React.ComponentType<Record<string, unknown>>,
     mobile: GlowButton as React.ComponentType<Record<string, unknown>>,
     controls: glowButtonControls,
-    code: glowButtonCode,
+    code: generateGlowButtonCode,
   },
   "ghost-button": {
     desktop: GhostButton as React.ComponentType<Record<string, unknown>>,
     mobile: GhostButton as React.ComponentType<Record<string, unknown>>,
     controls: ghostButtonControls,
-    code: ghostButtonCode,
+    code: generateGhostButtonCode,
   },
   "toggle": {
     desktop: TogglePrimitive as React.ComponentType<Record<string, unknown>>,
     mobile: TogglePrimitive as React.ComponentType<Record<string, unknown>>,
     controls: toggleControls,
-    code: toggleCode,
+    code: generateToggleCode,
   },
   "slider": {
     desktop: SliderPrimitive as React.ComponentType<Record<string, unknown>>,
     mobile: SliderPrimitive as React.ComponentType<Record<string, unknown>>,
     controls: sliderControls,
-    code: sliderCode,
+    code: generateSliderCode,
   },
   "badge": {
     desktop: Badge as React.ComponentType<Record<string, unknown>>,
     mobile: Badge as React.ComponentType<Record<string, unknown>>,
     controls: badgeControls,
-    code: badgeCode,
+    code: generateBadgeCode,
   },
   "status-dot": {
     desktop: StatusDot as React.ComponentType<Record<string, unknown>>,
     mobile: StatusDot as React.ComponentType<Record<string, unknown>>,
     controls: statusDotControls,
-    code: statusDotCode,
+    code: generateStatusDotCode,
   },
   "progress-bar": {
     desktop: ProgressBar as React.ComponentType<Record<string, unknown>>,
     mobile: ProgressBar as React.ComponentType<Record<string, unknown>>,
     controls: progressBarControls,
-    code: progressBarCode,
+    code: generateProgressBarCode,
   },
   "arc-gauge": {
     desktop: ArcGauge as React.ComponentType<Record<string, unknown>>,
     mobile: ArcGauge as React.ComponentType<Record<string, unknown>>,
     controls: arcGaugeControls,
-    code: arcGaugeCode,
+    code: generateArcGaugeCode,
   },
   "text-input": {
     desktop: TextInput as React.ComponentType<Record<string, unknown>>,
     mobile: TextInput as React.ComponentType<Record<string, unknown>>,
     controls: textInputControls,
-    code: textInputCode,
+    code: generateTextInputCode,
   },
   "tooltip": {
     desktop: TooltipPrimitive as React.ComponentType<Record<string, unknown>>,
     mobile: TooltipPrimitive as React.ComponentType<Record<string, unknown>>,
     controls: tooltipControls,
-    code: tooltipCode,
+    code: generateTooltipCode,
   },
   "popover": {
     desktop: PopoverPrimitive as React.ComponentType<Record<string, unknown>>,
     mobile: PopoverPrimitive as React.ComponentType<Record<string, unknown>>,
     controls: popoverControls,
-    code: popoverCode,
+    code: generatePopoverCode,
   },
   "tag": {
     desktop: Tag as React.ComponentType<Record<string, unknown>>,
     mobile: Tag as React.ComponentType<Record<string, unknown>>,
     controls: tagControls,
-    code: tagCode,
+    code: generateTagCode,
   },
 };
 
@@ -275,8 +275,12 @@ export default function ComponentPage() {
     setControlValues((prev) => ({ ...prev, [key]: value }));
   };
 
+  const resolvedCode = typeof entry.code === "function"
+    ? entry.code(controlValues)
+    : entry.code;
+
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(entry.code);
+    await navigator.clipboard.writeText(resolvedCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
@@ -400,7 +404,7 @@ export default function ComponentPage() {
             </div>
           </div>
         ) : (
-          <CodeHighlight code={entry.code} />
+          <CodeHighlight code={resolvedCode} />
         )}
       </div>
 
