@@ -37,6 +37,16 @@ import { ResultRevealMobile } from "@/components/library/output/ResultReveal/mob
 import { resultRevealControls } from "@/components/library/output/ResultReveal/controls";
 import { generateResultRevealCode } from "@/components/library/output/ResultReveal/code";
 
+import { StreamingText } from "@/components/library/output/StreamingText";
+import { StreamingTextMobile } from "@/components/library/output/StreamingText/mobile";
+import { streamingTextControls } from "@/components/library/output/StreamingText/controls";
+import { generateStreamingTextCode } from "@/components/library/output/StreamingText/code";
+
+import { SourceCitation } from "@/components/library/output/SourceCitation";
+import { SourceCitationMobile } from "@/components/library/output/SourceCitation/mobile";
+import { sourceCitationControls } from "@/components/library/output/SourceCitation/controls";
+import { generateSourceCitationCode } from "@/components/library/output/SourceCitation/code";
+
 import { InsightStack } from "@/components/library/output/InsightStack";
 import { InsightStackMobile } from "@/components/library/output/InsightStack/mobile";
 import { insightStackControls } from "@/components/library/output/InsightStack/controls";
@@ -142,6 +152,18 @@ const componentMap: Record<string, ComponentEntry> = {
     mobile: ResultRevealMobile as React.ComponentType<Record<string, unknown>>,
     controls: resultRevealControls,
     code: generateResultRevealCode,
+  },
+  "streaming-text": {
+    desktop: StreamingText as React.ComponentType<Record<string, unknown>>,
+    mobile: StreamingTextMobile as React.ComponentType<Record<string, unknown>>,
+    controls: streamingTextControls,
+    code: generateStreamingTextCode,
+  },
+  "source-citation": {
+    desktop: SourceCitation as React.ComponentType<Record<string, unknown>>,
+    mobile: SourceCitationMobile as React.ComponentType<Record<string, unknown>>,
+    controls: sourceCitationControls,
+    code: generateSourceCitationCode,
   },
   "insight-stack": {
     desktop: InsightStack as React.ComponentType<Record<string, unknown>>,

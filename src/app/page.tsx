@@ -8,6 +8,8 @@ import { ReasoningSteps } from "@/components/library/reasoning/ReasoningSteps";
 import { DecisionCard } from "@/components/library/decision/DecisionCard";
 import { ConfidenceMeter } from "@/components/library/decision/ConfidenceMeter";
 import { ResultReveal } from "@/components/library/output/ResultReveal";
+import { StreamingText } from "@/components/library/output/StreamingText";
+import { SourceCitation } from "@/components/library/output/SourceCitation";
 import { InsightStack } from "@/components/library/output/InsightStack";
 import { SmartCTA } from "@/components/library/action/SmartCTA";
 import { PromptInput } from "@/components/library/action/PromptInput";
@@ -31,6 +33,8 @@ const previewMap: Record<string, React.ComponentType> = {
   "decision-card": DecisionCard,
   "confidence-meter": ConfidenceMeter,
   "result-reveal": ResultReveal,
+  "streaming-text": StreamingText,
+  "source-citation": SourceCitation,
   "insight-stack": InsightStack,
   "smart-cta": SmartCTA,
   "prompt-input": PromptInput,

@@ -31,6 +31,8 @@ const componentIcons: Record<string, React.ElementType> = {
   "decision-card": Scale,
   "confidence-meter": BarChart3,
   "result-reveal": Eye,
+  "streaming-text": Activity,
+  "source-citation": BookOpen,
   "insight-stack": Layers,
   "progressive-blur-reveal": Play,
 };
@@ -109,18 +111,23 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         <div className="px-3 py-3">
           <div className="h-px bg-white/[0.04] mb-2" />
           {[
-            { label: "Patterns", icon: BookOpen },
-            { label: "Playground", icon: Gamepad2 },
-            { label: "Docs", icon: FileText },
-          ].map(({ label, icon: Icon }) => (
+            { label: "Patterns", icon: BookOpen, live: true },
+            { label: "Playground", icon: Gamepad2, live: false },
+            { label: "Docs", icon: FileText, live: false },
+          ].map(({ label, icon: Icon, live }) => (
             <Link
               key={label}
               href={`/${label.toLowerCase()}`}
-              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-white/20 hover:text-white/40 hover:bg-white/[0.02] transition-colors"
+              className={cn(
+                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
+                live
+                  ? "text-white/35 hover:text-white/60 hover:bg-white/[0.03]"
+                  : "text-white/20 hover:text-white/40 hover:bg-white/[0.02]"
+              )}
             >
-              <Icon size={15} className="text-white/12" />
+              <Icon size={15} className={live ? "text-white/25" : "text-white/12"} />
               <span>{label}</span>
-              <span className="ml-auto text-[9px] font-mono text-white/8">soon</span>
+              {!live && <span className="ml-auto text-[9px] font-mono text-white/8">soon</span>}
             </Link>
           ))}
         </div>
