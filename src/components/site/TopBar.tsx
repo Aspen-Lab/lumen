@@ -1,20 +1,52 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Star } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function TopBar() {
+  const pathname = usePathname();
+
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between h-14 px-6 lg:px-10 bg-surface-0/80 backdrop-blur-md">
-      {/* Logo */}
-      <Link href="/" className="flex items-center gap-2.5 group">
-        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-white/20 to-white/5 flex items-center justify-center">
-          <span className="text-white/90 font-bold text-xs">L</span>
-        </div>
-        <span className="text-lg font-bold text-white/90 tracking-tight group-hover:text-white transition-colors">
-          Lumen
-        </span>
-      </Link>
+      {/* Left — Logo + Nav */}
+      <div className="flex items-center gap-6">
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-white/20 to-white/5 flex items-center justify-center">
+            <span className="text-white/90 font-bold text-xs">L</span>
+          </div>
+          <span className="text-lg font-bold text-white/90 tracking-tight group-hover:text-white transition-colors">
+            Lumen
+          </span>
+        </Link>
+
+        <nav className="hidden md:flex items-center gap-1">
+          {[
+            { href: "/", label: "Components" },
+            { href: "/flow", label: "Flow" },
+            { href: "/patterns", label: "Patterns" },
+          ].map(({ href, label }) => {
+            const isActive = href === "/"
+              ? pathname === "/" || pathname.startsWith("/components")
+              : pathname.startsWith(href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+                  isActive
+                    ? "text-white/70 bg-white/[0.05]"
+                    : "text-white/25 hover:text-white/50"
+                )}
+              >
+                {label}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
 
       {/* Right — GitHub */}
       <a
