@@ -4,266 +4,14 @@ import { useState, useMemo, useEffect } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { Copy, Check, Share2 } from "lucide-react";
 import { getComponentBySlug } from "@/data/registry";
+import { loadComponent, type ComponentEntry } from "@/data/component-loader";
 import { DeviceToggle, type Device } from "@/components/site/DeviceToggle";
-import { PreviewFrame } from "@/components/site/PreviewFrame";
 import { ControlsPanel } from "@/components/site/ControlsPanel";
 import { getPresetsForComponent } from "@/data/presets";
 import { ControlDefinition } from "@/types/controls";
 import { cn } from "@/lib/utils";
 import { CodeHighlight } from "@/components/site/CodeHighlight";
-
-import { ThinkingLoader } from "@/components/library/reasoning/ThinkingLoader";
-import { ThinkingLoaderMobile } from "@/components/library/reasoning/ThinkingLoader/mobile";
-import { thinkingLoaderControls } from "@/components/library/reasoning/ThinkingLoader/controls";
-import { generateThinkingLoaderCode } from "@/components/library/reasoning/ThinkingLoader/code";
-
-import { ReasoningSteps } from "@/components/library/reasoning/ReasoningSteps";
-import { ReasoningStepsMobile } from "@/components/library/reasoning/ReasoningSteps/mobile";
-import { reasoningStepsControls } from "@/components/library/reasoning/ReasoningSteps/controls";
-import { generateReasoningStepsCode } from "@/components/library/reasoning/ReasoningSteps/code";
-
-import { DecisionCard } from "@/components/library/decision/DecisionCard";
-import { DecisionCardMobile } from "@/components/library/decision/DecisionCard/mobile";
-import { decisionCardControls } from "@/components/library/decision/DecisionCard/controls";
-import { generateDecisionCardCode } from "@/components/library/decision/DecisionCard/code";
-
-import { ConfidenceMeter } from "@/components/library/decision/ConfidenceMeter";
-import { ConfidenceMeterMobile } from "@/components/library/decision/ConfidenceMeter/mobile";
-import { confidenceMeterControls } from "@/components/library/decision/ConfidenceMeter/controls";
-import { generateConfidenceMeterCode } from "@/components/library/decision/ConfidenceMeter/code";
-
-import { ResultReveal } from "@/components/library/output/ResultReveal";
-import { ResultRevealMobile } from "@/components/library/output/ResultReveal/mobile";
-import { resultRevealControls } from "@/components/library/output/ResultReveal/controls";
-import { generateResultRevealCode } from "@/components/library/output/ResultReveal/code";
-
-import { StreamingText } from "@/components/library/output/StreamingText";
-import { StreamingTextMobile } from "@/components/library/output/StreamingText/mobile";
-import { streamingTextControls } from "@/components/library/output/StreamingText/controls";
-import { generateStreamingTextCode } from "@/components/library/output/StreamingText/code";
-
-import { SourceCitation } from "@/components/library/output/SourceCitation";
-import { SourceCitationMobile } from "@/components/library/output/SourceCitation/mobile";
-import { sourceCitationControls } from "@/components/library/output/SourceCitation/controls";
-import { generateSourceCitationCode } from "@/components/library/output/SourceCitation/code";
-
-import { InsightStack } from "@/components/library/output/InsightStack";
-import { InsightStackMobile } from "@/components/library/output/InsightStack/mobile";
-import { insightStackControls } from "@/components/library/output/InsightStack/controls";
-import { generateInsightStackCode } from "@/components/library/output/InsightStack/code";
-
-import { SmartCTA } from "@/components/library/action/SmartCTA";
-import { SmartCTAMobile } from "@/components/library/action/SmartCTA/mobile";
-import { smartCTAControls } from "@/components/library/action/SmartCTA/controls";
-import { generateSmartCTACode } from "@/components/library/action/SmartCTA/code";
-
-import { ProgressiveBlurReveal } from "@/components/library/motion/ProgressiveBlurReveal";
-import { ProgressiveBlurRevealMobile } from "@/components/library/motion/ProgressiveBlurReveal/mobile";
-import { progressiveBlurRevealControls } from "@/components/library/motion/ProgressiveBlurReveal/controls";
-import { generateProgressiveBlurRevealCode } from "@/components/library/motion/ProgressiveBlurReveal/code";
-
-import { PromptInput } from "@/components/library/action/PromptInput";
-import { PromptInputMobile } from "@/components/library/action/PromptInput/mobile";
-import { promptInputControls } from "@/components/library/action/PromptInput/controls";
-import { generatePromptInputCode } from "@/components/library/action/PromptInput/code";
-
-import { GlowButton } from "@/components/library/primitives/GlowButton";
-import { glowButtonControls } from "@/components/library/primitives/GlowButton/controls";
-import { generateGlowButtonCode } from "@/components/library/primitives/GlowButton/code";
-
-import { GhostButton } from "@/components/library/primitives/GhostButton";
-import { ghostButtonControls } from "@/components/library/primitives/GhostButton/controls";
-import { generateGhostButtonCode } from "@/components/library/primitives/GhostButton/code";
-
-import { Toggle as TogglePrimitive } from "@/components/library/primitives/Toggle";
-import { toggleControls } from "@/components/library/primitives/Toggle/controls";
-import { generateToggleCode } from "@/components/library/primitives/Toggle/code";
-
-import { Slider as SliderPrimitive } from "@/components/library/primitives/Slider";
-import { sliderControls } from "@/components/library/primitives/Slider/controls";
-import { generateSliderCode } from "@/components/library/primitives/Slider/code";
-
-import { Badge } from "@/components/library/primitives/Badge";
-import { badgeControls } from "@/components/library/primitives/Badge/controls";
-import { generateBadgeCode } from "@/components/library/primitives/Badge/code";
-
-import { StatusDot } from "@/components/library/primitives/StatusDot";
-import { statusDotControls } from "@/components/library/primitives/StatusDot/controls";
-import { generateStatusDotCode } from "@/components/library/primitives/StatusDot/code";
-
-import { ProgressBar } from "@/components/library/primitives/ProgressBar";
-import { progressBarControls } from "@/components/library/primitives/ProgressBar/controls";
-import { generateProgressBarCode } from "@/components/library/primitives/ProgressBar/code";
-
-import { ArcGauge } from "@/components/library/primitives/ArcGauge";
-import { arcGaugeControls } from "@/components/library/primitives/ArcGauge/controls";
-import { generateArcGaugeCode } from "@/components/library/primitives/ArcGauge/code";
-
-import { TextInput } from "@/components/library/primitives/TextInput";
-import { textInputControls } from "@/components/library/primitives/TextInput/controls";
-import { generateTextInputCode } from "@/components/library/primitives/TextInput/code";
-
-import { Tooltip as TooltipPrimitive } from "@/components/library/primitives/Tooltip";
-import { tooltipControls } from "@/components/library/primitives/Tooltip/controls";
-import { generateTooltipCode } from "@/components/library/primitives/Tooltip/code";
-
-import { Popover as PopoverPrimitive } from "@/components/library/primitives/Popover";
-import { popoverControls } from "@/components/library/primitives/Popover/controls";
-import { generatePopoverCode } from "@/components/library/primitives/Popover/code";
-
-import { Tag } from "@/components/library/primitives/Tag";
-import { tagControls } from "@/components/library/primitives/Tag/controls";
-import { generateTagCode } from "@/components/library/primitives/Tag/code";
-
-interface ComponentEntry {
-  desktop: React.ComponentType<Record<string, unknown>>;
-  mobile: React.ComponentType<Record<string, unknown>>;
-  controls: ControlDefinition[];
-  code: string | ((props: Record<string, unknown>) => string);
-}
-
-const componentMap: Record<string, ComponentEntry> = {
-  "thinking-loader": {
-    desktop: ThinkingLoader as React.ComponentType<Record<string, unknown>>,
-    mobile: ThinkingLoaderMobile as React.ComponentType<Record<string, unknown>>,
-    controls: thinkingLoaderControls,
-    code: generateThinkingLoaderCode,
-  },
-  "reasoning-steps": {
-    desktop: ReasoningSteps as React.ComponentType<Record<string, unknown>>,
-    mobile: ReasoningStepsMobile as React.ComponentType<Record<string, unknown>>,
-    controls: reasoningStepsControls,
-    code: generateReasoningStepsCode,
-  },
-  "decision-card": {
-    desktop: DecisionCard as React.ComponentType<Record<string, unknown>>,
-    mobile: DecisionCardMobile as React.ComponentType<Record<string, unknown>>,
-    controls: decisionCardControls,
-    code: generateDecisionCardCode,
-  },
-  "confidence-meter": {
-    desktop: ConfidenceMeter as React.ComponentType<Record<string, unknown>>,
-    mobile: ConfidenceMeterMobile as React.ComponentType<Record<string, unknown>>,
-    controls: confidenceMeterControls,
-    code: generateConfidenceMeterCode,
-  },
-  "result-reveal": {
-    desktop: ResultReveal as React.ComponentType<Record<string, unknown>>,
-    mobile: ResultRevealMobile as React.ComponentType<Record<string, unknown>>,
-    controls: resultRevealControls,
-    code: generateResultRevealCode,
-  },
-  "streaming-text": {
-    desktop: StreamingText as React.ComponentType<Record<string, unknown>>,
-    mobile: StreamingTextMobile as React.ComponentType<Record<string, unknown>>,
-    controls: streamingTextControls,
-    code: generateStreamingTextCode,
-  },
-  "source-citation": {
-    desktop: SourceCitation as React.ComponentType<Record<string, unknown>>,
-    mobile: SourceCitationMobile as React.ComponentType<Record<string, unknown>>,
-    controls: sourceCitationControls,
-    code: generateSourceCitationCode,
-  },
-  "insight-stack": {
-    desktop: InsightStack as React.ComponentType<Record<string, unknown>>,
-    mobile: InsightStackMobile as React.ComponentType<Record<string, unknown>>,
-    controls: insightStackControls,
-    code: generateInsightStackCode,
-  },
-  "smart-cta": {
-    desktop: SmartCTA as React.ComponentType<Record<string, unknown>>,
-    mobile: SmartCTAMobile as React.ComponentType<Record<string, unknown>>,
-    controls: smartCTAControls,
-    code: generateSmartCTACode,
-  },
-  "progressive-blur-reveal": {
-    desktop: ProgressiveBlurReveal as React.ComponentType<Record<string, unknown>>,
-    mobile: ProgressiveBlurRevealMobile as React.ComponentType<Record<string, unknown>>,
-    controls: progressiveBlurRevealControls,
-    code: generateProgressiveBlurRevealCode,
-  },
-  "prompt-input": {
-    desktop: PromptInput as React.ComponentType<Record<string, unknown>>,
-    mobile: PromptInputMobile as React.ComponentType<Record<string, unknown>>,
-    controls: promptInputControls,
-    code: generatePromptInputCode,
-  },
-  "glow-button": {
-    desktop: GlowButton as React.ComponentType<Record<string, unknown>>,
-    mobile: GlowButton as React.ComponentType<Record<string, unknown>>,
-    controls: glowButtonControls,
-    code: generateGlowButtonCode,
-  },
-  "ghost-button": {
-    desktop: GhostButton as React.ComponentType<Record<string, unknown>>,
-    mobile: GhostButton as React.ComponentType<Record<string, unknown>>,
-    controls: ghostButtonControls,
-    code: generateGhostButtonCode,
-  },
-  "toggle": {
-    desktop: TogglePrimitive as React.ComponentType<Record<string, unknown>>,
-    mobile: TogglePrimitive as React.ComponentType<Record<string, unknown>>,
-    controls: toggleControls,
-    code: generateToggleCode,
-  },
-  "slider": {
-    desktop: SliderPrimitive as React.ComponentType<Record<string, unknown>>,
-    mobile: SliderPrimitive as React.ComponentType<Record<string, unknown>>,
-    controls: sliderControls,
-    code: generateSliderCode,
-  },
-  "badge": {
-    desktop: Badge as React.ComponentType<Record<string, unknown>>,
-    mobile: Badge as React.ComponentType<Record<string, unknown>>,
-    controls: badgeControls,
-    code: generateBadgeCode,
-  },
-  "status-dot": {
-    desktop: StatusDot as React.ComponentType<Record<string, unknown>>,
-    mobile: StatusDot as React.ComponentType<Record<string, unknown>>,
-    controls: statusDotControls,
-    code: generateStatusDotCode,
-  },
-  "progress-bar": {
-    desktop: ProgressBar as React.ComponentType<Record<string, unknown>>,
-    mobile: ProgressBar as React.ComponentType<Record<string, unknown>>,
-    controls: progressBarControls,
-    code: generateProgressBarCode,
-  },
-  "arc-gauge": {
-    desktop: ArcGauge as React.ComponentType<Record<string, unknown>>,
-    mobile: ArcGauge as React.ComponentType<Record<string, unknown>>,
-    controls: arcGaugeControls,
-    code: generateArcGaugeCode,
-  },
-  "text-input": {
-    desktop: TextInput as React.ComponentType<Record<string, unknown>>,
-    mobile: TextInput as React.ComponentType<Record<string, unknown>>,
-    controls: textInputControls,
-    code: generateTextInputCode,
-  },
-  "tooltip": {
-    desktop: TooltipPrimitive as React.ComponentType<Record<string, unknown>>,
-    mobile: TooltipPrimitive as React.ComponentType<Record<string, unknown>>,
-    controls: tooltipControls,
-    code: generateTooltipCode,
-  },
-  "popover": {
-    desktop: PopoverPrimitive as React.ComponentType<Record<string, unknown>>,
-    mobile: PopoverPrimitive as React.ComponentType<Record<string, unknown>>,
-    controls: popoverControls,
-    code: generatePopoverCode,
-  },
-  "tag": {
-    desktop: Tag as React.ComponentType<Record<string, unknown>>,
-    mobile: Tag as React.ComponentType<Record<string, unknown>>,
-    controls: tagControls,
-    code: generateTagCode,
-  },
-};
-
-type ViewTab = "preview" | "code";
+import { CopyToast } from "@/components/site/CopyToast";
 
 function parseSearchParams(
   searchParams: URLSearchParams,
@@ -293,36 +41,54 @@ function serializeValues(
   return params.toString();
 }
 
+type ViewTab = "preview" | "code";
+
 export default function ComponentPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
   const slug = params.slug as string;
+
+  const [entry, setEntry] = useState<ComponentEntry | null>(null);
+  const [loading, setLoading] = useState(true);
   const [device, setDevice] = useState<Device>("desktop");
   const [view, setView] = useState<ViewTab>("preview");
   const [copied, setCopied] = useState(false);
   const [shared, setShared] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [controlValues, setControlValues] = useState<Record<string, unknown>>({});
 
   const meta = getComponentBySlug(slug);
-  const entry = componentMap[slug];
+
+  // Lazy load component
+  useEffect(() => {
+    setLoading(true);
+    loadComponent(slug).then((loaded) => {
+      setEntry(loaded);
+      if (loaded) {
+        const defaults: Record<string, unknown> = {};
+        loaded.controls.forEach((c) => { defaults[c.key] = c.default; });
+        const fromUrl = parseSearchParams(searchParams, loaded.controls);
+        setControlValues({ ...defaults, ...fromUrl });
+      }
+      setLoading(false);
+    });
+  }, [slug, searchParams]);
 
   const defaultValues = useMemo(() => {
     if (!entry) return {};
     const vals: Record<string, unknown> = {};
-    entry.controls.forEach((c) => {
-      vals[c.key] = c.default;
-    });
+    entry.controls.forEach((c) => { vals[c.key] = c.default; });
     return vals;
   }, [entry]);
 
-  // Init from URL params or defaults
-  const initialValues = useMemo(() => {
-    if (!entry) return {};
-    const fromUrl = parseSearchParams(searchParams, entry.controls);
-    return { ...defaultValues, ...fromUrl };
-  }, [entry, defaultValues, searchParams]);
-
-  const [controlValues, setControlValues] = useState<Record<string, unknown>>(initialValues);
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[40vh]">
+        <div className="w-5 h-5 rounded-full border-2 border-white/10 border-t-white/40 animate-spin" />
+      </div>
+    );
+  }
 
   if (!meta || !entry) {
     return (
@@ -356,14 +122,16 @@ export default function ComponentPage() {
   const handleCopy = async () => {
     await navigator.clipboard.writeText(resolvedCode);
     setCopied(true);
+    setShowToast(true);
     setTimeout(() => setCopied(false), 1500);
+    setTimeout(() => setShowToast(false), 5000);
   };
 
   const Component = device === "desktop" ? entry.desktop : entry.mobile;
 
   return (
     <div className="space-y-8">
-      {/* Header — big name like React Bits */}
+      {/* Header */}
       <div className="pt-2">
         <h1 className="text-3xl font-bold text-white tracking-tight mb-3">
           {meta.name}
@@ -401,7 +169,6 @@ export default function ComponentPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Share button */}
           <button
             onClick={handleShare}
             className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-sm text-white/20 hover:text-white/50 hover:bg-white/[0.04] transition-all"
@@ -446,22 +213,17 @@ export default function ComponentPage() {
             </div>
 
             {/* Corner marks */}
-            <div className="absolute top-4 left-4 w-5 h-5 pointer-events-none">
-              <div className="absolute top-0 left-0 w-full h-px bg-white/[0.08]" />
-              <div className="absolute top-0 left-0 h-full w-px bg-white/[0.08]" />
-            </div>
-            <div className="absolute top-4 right-4 w-5 h-5 pointer-events-none">
-              <div className="absolute top-0 right-0 w-full h-px bg-white/[0.08]" />
-              <div className="absolute top-0 right-0 h-full w-px bg-white/[0.08]" />
-            </div>
-            <div className="absolute bottom-4 left-4 w-5 h-5 pointer-events-none">
-              <div className="absolute bottom-0 left-0 w-full h-px bg-white/[0.08]" />
-              <div className="absolute bottom-0 left-0 h-full w-px bg-white/[0.08]" />
-            </div>
-            <div className="absolute bottom-4 right-4 w-5 h-5 pointer-events-none">
-              <div className="absolute bottom-0 right-0 w-full h-px bg-white/[0.08]" />
-              <div className="absolute bottom-0 right-0 h-full w-px bg-white/[0.08]" />
-            </div>
+            {[
+              "top-4 left-4",
+              "top-4 right-4",
+              "bottom-4 left-4",
+              "bottom-4 right-4",
+            ].map((pos) => (
+              <div key={pos} className={`absolute ${pos} w-5 h-5 pointer-events-none`}>
+                <div className={`absolute ${pos.includes("top") ? "top-0" : "bottom-0"} ${pos.includes("left") ? "left-0" : "right-0"} w-full h-px bg-white/[0.08]`} />
+                <div className={`absolute ${pos.includes("top") ? "top-0" : "bottom-0"} ${pos.includes("left") ? "left-0" : "right-0"} h-full w-px bg-white/[0.08]`} />
+              </div>
+            ))}
 
             {/* Ambient glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-32 bg-white/[0.01] blur-3xl rounded-full pointer-events-none" />
@@ -491,7 +253,7 @@ export default function ComponentPage() {
         )}
       </div>
 
-      {/* Controls — "Customize" section */}
+      {/* Controls */}
       {entry.controls.length > 0 && (
         <div>
           <h2 className="text-xl font-semibold text-white/80 mb-4">Customize</h2>
@@ -505,6 +267,8 @@ export default function ComponentPage() {
           />
         </div>
       )}
+
+      <CopyToast show={showToast} onClose={() => setShowToast(false)} />
     </div>
   );
 }
