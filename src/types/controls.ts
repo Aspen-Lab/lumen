@@ -1,5 +1,13 @@
 export type ControlType = "slider" | "select" | "toggle" | "color" | "text";
 
+export interface ThemePreset {
+  id: string;
+  name: string;
+  brand?: string;
+  color: string;
+  values: Record<string, unknown>;
+}
+
 export interface ControlDefinition {
   key: string;
   label: string;

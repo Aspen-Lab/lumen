@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import { ControlDefinition } from "@/types/controls";
+import { ControlDefinition, ThemePreset } from "@/types/controls";
 import { cn } from "@/lib/utils";
 import { Layers, Zap, Palette } from "lucide-react";
 
@@ -25,6 +25,9 @@ interface ControlsPanelProps {
   controls: ControlDefinition[];
   values: Record<string, unknown>;
   onChange: (key: string, value: unknown) => void;
+  presets?: ThemePreset[];
+  onApplyPreset?: (values: Record<string, unknown>) => void;
+  onReset?: () => void;
 }
 
 const LAYER_META = {
@@ -35,7 +38,7 @@ const LAYER_META = {
 
 type Layer = keyof typeof LAYER_META;
 
-export function ControlsPanel({ controls, values, onChange }: ControlsPanelProps) {
+export function ControlsPanel({ controls, values, onChange, presets, onApplyPreset, onReset }: ControlsPanelProps) {
   const availableLayers = (["architecture", "motion", "color"] as const).filter(
     (l) => controls.some((c) => c.layer === l)
   );
@@ -46,6 +49,31 @@ export function ControlsPanel({ controls, values, onChange }: ControlsPanelProps
 
   return (
     <div>
+      {/* Presets row */}
+      {presets && presets.length > 0 && onApplyPreset && (
+        <div className="flex items-center gap-2 mb-5 flex-wrap">
+          <span className="text-[10px] font-mono text-white/15 uppercase tracking-widest mr-1">Presets</span>
+          {presets.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => onApplyPreset(p.values)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/[0.03] text-white/35 hover:text-white/60 hover:bg-white/[0.06] transition-all"
+            >
+              <div className="w-2 h-2 rounded-full" style={{ background: p.color }} />
+              {p.name}
+            </button>
+          ))}
+          {onReset && (
+            <button
+              onClick={onReset}
+              className="px-2.5 py-1.5 rounded-lg text-xs text-white/15 hover:text-white/35 hover:bg-white/[0.03] transition-all ml-auto"
+            >
+              Reset
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Tabs */}
       <div className="flex items-center gap-1 mb-6 rounded-xl bg-surface-2/60 p-1 w-fit">
         {availableLayers.map((layer) => {

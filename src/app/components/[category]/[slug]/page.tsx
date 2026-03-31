@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { useParams } from "next/navigation";
-import { Copy, Check } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { Copy, Check, Share2 } from "lucide-react";
 import { getComponentBySlug } from "@/data/registry";
 import { DeviceToggle, type Device } from "@/components/site/DeviceToggle";
 import { PreviewFrame } from "@/components/site/PreviewFrame";
 import { ControlsPanel } from "@/components/site/ControlsPanel";
+import { getPresetsForComponent } from "@/data/presets";
 import { ControlDefinition } from "@/types/controls";
 import { cn } from "@/lib/utils";
 import { CodeHighlight } from "@/components/site/CodeHighlight";
@@ -242,12 +243,43 @@ const componentMap: Record<string, ComponentEntry> = {
 
 type ViewTab = "preview" | "code";
 
+function parseSearchParams(
+  searchParams: URLSearchParams,
+  controls: ControlDefinition[]
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  controls.forEach((c) => {
+    const raw = searchParams.get(c.key);
+    if (raw === null) return;
+    if (c.type === "toggle") result[c.key] = raw === "true";
+    else if (c.type === "slider") result[c.key] = parseFloat(raw);
+    else result[c.key] = raw;
+  });
+  return result;
+}
+
+function serializeValues(
+  values: Record<string, unknown>,
+  defaults: Record<string, unknown>
+): string {
+  const params = new URLSearchParams();
+  Object.entries(values).forEach(([k, v]) => {
+    if (v !== undefined && v !== defaults[k]) {
+      params.set(k, String(v));
+    }
+  });
+  return params.toString();
+}
+
 export default function ComponentPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const slug = params.slug as string;
   const [device, setDevice] = useState<Device>("desktop");
   const [view, setView] = useState<ViewTab>("preview");
   const [copied, setCopied] = useState(false);
+  const [shared, setShared] = useState(false);
 
   const meta = getComponentBySlug(slug);
   const entry = componentMap[slug];
@@ -261,7 +293,14 @@ export default function ComponentPage() {
     return vals;
   }, [entry]);
 
-  const [controlValues, setControlValues] = useState<Record<string, unknown>>(defaultValues);
+  // Init from URL params or defaults
+  const initialValues = useMemo(() => {
+    if (!entry) return {};
+    const fromUrl = parseSearchParams(searchParams, entry.controls);
+    return { ...defaultValues, ...fromUrl };
+  }, [entry, defaultValues, searchParams]);
+
+  const [controlValues, setControlValues] = useState<Record<string, unknown>>(initialValues);
 
   if (!meta || !entry) {
     return (
@@ -273,6 +312,19 @@ export default function ComponentPage() {
 
   const handleControlChange = (key: string, value: unknown) => {
     setControlValues((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleShare = async () => {
+    const qs = serializeValues(controlValues, defaultValues);
+    const url = `${window.location.origin}${window.location.pathname}${qs ? "?" + qs : ""}`;
+    await navigator.clipboard.writeText(url);
+    setShared(true);
+    setTimeout(() => setShared(false), 1500);
+  };
+
+  const handleReset = () => {
+    setControlValues(defaultValues);
+    router.replace(window.location.pathname);
   };
 
   const resolvedCode = typeof entry.code === "function"
@@ -326,7 +378,16 @@ export default function ComponentPage() {
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {/* Share button */}
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-sm text-white/20 hover:text-white/50 hover:bg-white/[0.04] transition-all"
+          >
+            {shared ? <Check size={13} className="text-white/60" /> : <Share2 size={13} />}
+            {shared ? "Copied URL" : "Share"}
+          </button>
+
           {view === "preview" ? (
             <DeviceToggle device={device} onChange={setDevice} />
           ) : (
@@ -412,7 +473,14 @@ export default function ComponentPage() {
       {entry.controls.length > 0 && (
         <div>
           <h2 className="text-xl font-semibold text-white/80 mb-4">Customize</h2>
-          <ControlsPanel controls={entry.controls} values={controlValues} onChange={handleControlChange} />
+          <ControlsPanel
+            controls={entry.controls}
+            values={controlValues}
+            onChange={handleControlChange}
+            presets={getPresetsForComponent(entry.controls.map((c) => c.key))}
+            onApplyPreset={(presetValues) => setControlValues((prev) => ({ ...prev, ...presetValues }))}
+            onReset={handleReset}
+          />
         </div>
       )}
     </div>
