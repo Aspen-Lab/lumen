@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { Copy, Check, Share2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { getComponentBySlug } from "@/data/registry";
 import { loadComponent, type ComponentEntry } from "@/data/component-loader";
 import { DeviceToggle, type Device } from "@/components/site/DeviceToggle";
@@ -130,7 +131,12 @@ export default function ComponentPage() {
   const Component = device === "desktop" ? entry.desktop : entry.mobile;
 
   return (
-    <div className="space-y-8">
+    <motion.div
+      className="space-y-8"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+    >
       {/* Header */}
       <div className="pt-2">
         <h1 className="text-3xl font-bold text-white tracking-tight mb-3">
@@ -141,18 +147,26 @@ export default function ComponentPage() {
 
       {/* Pill toggle bar */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1 rounded-xl bg-surface-2/80 p-1">
+        <div className="flex items-center gap-1 rounded-xl bg-surface-2/80 p-1 relative">
           {(["preview", "code"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setView(tab)}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150",
+                "relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 z-[1]",
                 view === tab
-                  ? "bg-surface-4/80 text-white shadow-sm"
+                  ? "text-white"
                   : "text-white/30 hover:text-white/55"
               )}
             >
+              {view === tab && (
+                <motion.div
+                  layoutId="view-tab"
+                  className="absolute inset-0 bg-surface-4/80 rounded-lg shadow-sm"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative z-[1] flex items-center gap-2">
               {tab === "preview" ? (
                 <>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -164,6 +178,7 @@ export default function ComponentPage() {
                   Code
                 </>
               )}
+              </span>
             </button>
           ))}
         </div>
@@ -193,8 +208,16 @@ export default function ComponentPage() {
 
       {/* Main window */}
       <div className="rounded-2xl bg-surface-1/60 backdrop-blur-sm overflow-hidden shadow-2xl shadow-black/20">
+        <AnimatePresence mode="wait">
         {view === "preview" ? (
-          <div className="relative">
+          <motion.div
+            key="preview"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="relative"
+          >
             {/* Grid background */}
             <div className="absolute inset-0 opacity-[0.03]"
               style={{
@@ -247,10 +270,19 @@ export default function ComponentPage() {
                 {device === "desktop" ? "960×auto" : "375×auto"}
               </span>
             </div>
-          </div>
+          </motion.div>
         ) : (
-          <CodeHighlight code={resolvedCode} />
+          <motion.div
+            key="code"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <CodeHighlight code={resolvedCode} />
+          </motion.div>
         )}
+        </AnimatePresence>
       </div>
 
       {/* Controls */}
@@ -269,6 +301,6 @@ export default function ComponentPage() {
       )}
 
       <CopyToast show={showToast} onClose={() => setShowToast(false)} />
-    </div>
+    </motion.div>
   );
 }
