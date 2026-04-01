@@ -65,32 +65,48 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                   <span className="text-xs font-medium text-white/25">{cat.name}</span>
                 </div>
 
-                {components.map((comp) => {
+                {components.map((comp, i) => {
                   const href = `/components/${comp.category}/${comp.slug}`;
                   const isActive = pathname === href;
                   const Icon = componentIcons[comp.slug] || Sparkles;
                   return (
-                    <Link
+                    <motion.div
                       key={comp.slug}
-                      href={href}
-                      onClick={onClose}
-                      className={cn(
-                        "relative flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors duration-150",
-                        isActive
-                          ? "text-white"
-                          : "text-white/40 hover:text-white/70"
-                      )}
+                      initial={{ opacity: 0, x: -6 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.03, duration: 0.25 }}
                     >
-                      {isActive && (
+                      <Link
+                        href={href}
+                        onClick={onClose}
+                        className={cn(
+                          "group/item relative flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors duration-150",
+                          isActive
+                            ? "text-white"
+                            : "text-white/40 hover:text-white/70"
+                        )}
+                      >
+                        {isActive && (
+                          <motion.div
+                            layoutId="sidebar-active"
+                            className="absolute inset-0 bg-white/[0.07] rounded-lg"
+                            transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                          />
+                        )}
                         <motion.div
-                          layoutId="sidebar-active"
-                          className="absolute inset-0 bg-white/[0.07] rounded-lg"
-                          transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                          className="relative z-[1]"
+                          whileHover={{ rotate: 12 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                        >
+                          <Icon size={16} className={cn(isActive ? "text-white/60" : "text-white/20 group-hover/item:text-white/50 transition-colors")} />
+                        </motion.div>
+                        <span className="relative z-[1]">{comp.name}</span>
+                        {/* Hover dash */}
+                        <motion.div
+                          className="absolute right-3 w-0 h-px bg-white/20 group-hover/item:w-3 transition-all duration-200"
                         />
-                      )}
-                      <Icon size={16} className={cn("relative z-[1]", isActive ? "text-white/60" : "text-white/20")} />
-                      <span className="relative z-[1]">{comp.name}</span>
-                    </Link>
+                      </Link>
+                    </motion.div>
                   );
                 })}
               </div>

@@ -217,6 +217,7 @@ export default function ComponentPage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className="relative"
+            data-cursor="preview"
           >
             {/* Grid background */}
             <div className="absolute inset-0 opacity-[0.03]"
@@ -254,7 +255,7 @@ export default function ComponentPage() {
             {/* Component */}
             <div
               className={cn(
-                "relative z-[1] min-h-[460px] flex items-center justify-center p-12 transition-all duration-300",
+                "relative z-[1] min-h-[460px] flex items-center justify-center p-12 transition-all duration-300 [&]:cursor-none",
                 device === "mobile" && "max-w-[375px] mx-auto"
               )}
             >

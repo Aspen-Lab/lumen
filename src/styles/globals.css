@@ -34,6 +34,12 @@ html {
   -moz-osx-font-smoothing: grayscale;
   font-variant-numeric: tabular-nums;
   scroll-behavior: smooth;
+  cursor: none;
+}
+
+/* Ensure cursor:none everywhere */
+*, *::before, *::after {
+  cursor: none !important;
 }
 
 body {

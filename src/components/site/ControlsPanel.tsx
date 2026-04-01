@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { ControlDefinition, ThemePreset } from "@/types/controls";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 import { Layers, Zap, Palette } from "lucide-react";
 
 function useThrottled(fn: (key: string, value: unknown) => void, ms = 50) {
@@ -84,25 +85,47 @@ export function ControlsPanel({ controls, values, onChange, presets, onApplyPres
               key={layer}
               onClick={() => setActiveTab(layer)}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150",
+                "relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150 z-[1]",
                 activeTab === layer
-                  ? "bg-surface-4/80 text-white shadow-sm"
+                  ? "text-white"
                   : "text-white/25 hover:text-white/50"
               )}
             >
-              <Icon size={14} />
-              {meta.label}
+              {activeTab === layer && (
+                <motion.div
+                  layoutId="ctrl-tab"
+                  className="absolute inset-0 bg-surface-4/80 rounded-lg shadow-sm"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative z-[1] flex items-center gap-2">
+                <Icon size={14} />
+                {meta.label}
+              </span>
             </button>
           );
         })}
       </div>
 
-      {/* Controls */}
-      <div className="space-y-5">
-        {activeControls.map((c) => (
-          <ControlItem key={c.key} control={c} value={values[c.key]} onChange={onChange} />
+      {/* Controls — animated entrance */}
+      <motion.div
+        key={activeTab}
+        className="space-y-5"
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        {activeControls.map((c, i) => (
+          <motion.div
+            key={c.key}
+            initial={{ opacity: 0, x: -4 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.03, duration: 0.2 }}
+          >
+            <ControlItem control={c} value={values[c.key]} onChange={onChange} />
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }

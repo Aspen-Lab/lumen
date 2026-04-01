@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Logo } from "./Logo";
 
 export function TopBar() {
   const pathname = usePathname();
@@ -18,15 +19,8 @@ export function TopBar() {
     <header className="sticky top-0 z-30 flex items-center justify-between h-14 px-6 lg:px-10 bg-surface-0/80 backdrop-blur-md">
       {/* Left */}
       <div className="flex items-center gap-6">
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <motion.img
-            src="/images/logo.png"
-            alt="Lumen"
-            className="h-5 w-auto opacity-90 group-hover:opacity-100 transition-opacity"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          />
+        <Link href="/" className="flex items-center overflow-visible p-1">
+          <Logo className="h-[18px] w-auto" />
         </Link>
 
         <nav className="hidden md:flex items-center gap-1 relative">
