@@ -45,8 +45,8 @@ export default function RootLayout({
                 </div>
               </main>
 
-              <footer className="px-6 lg:px-10 py-6">
-                <div className="max-w-content mx-auto text-xs text-white/15">
+              <footer className="px-6 lg:px-10 py-4 mt-auto">
+                <div className="max-w-content mx-auto text-[11px] text-white/10 font-mono">
                   Designed & built by Aspen
                 </div>
               </footer>

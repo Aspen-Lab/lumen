@@ -19,17 +19,14 @@ export function TopBar() {
       {/* Left */}
       <div className="flex items-center gap-6">
         <Link href="/" className="flex items-center gap-2.5 group">
-          <motion.div
-            className="w-7 h-7 rounded-lg bg-gradient-to-br from-white/20 to-white/5 flex items-center justify-center"
+          <motion.img
+            src="/images/logo.png"
+            alt="Lumen"
+            className="h-5 w-auto opacity-90 group-hover:opacity-100 transition-opacity"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          >
-            <span className="text-white/90 font-bold text-xs">L</span>
-          </motion.div>
-          <span className="text-lg font-bold text-white/90 tracking-tight group-hover:text-white transition-colors duration-200">
-            Lumen
-          </span>
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-1 relative">

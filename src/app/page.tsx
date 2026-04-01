@@ -11,7 +11,7 @@ const previewMap: Record<string, React.ComponentType> = {
 
 const stagger = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.06 } },
+  show: { transition: { staggerChildren: 0.08 } },
 };
 
 const fadeUp = {
@@ -22,24 +22,22 @@ const fadeUp = {
 export default function HomePage() {
   return (
     <motion.div
-      className="space-y-16 py-4"
+      className="py-4"
       initial="hidden"
       animate="show"
       variants={stagger}
     >
       {/* Hero */}
-      <motion.div className="space-y-5 pt-4" variants={fadeUp}>
-        <h1 className="text-[48px] font-bold tracking-tight text-white leading-none">
-          Lumen
-        </h1>
-        <p className="text-lg text-white/35 max-w-lg leading-relaxed">
+      <motion.div className="space-y-4 pt-4 mb-12" variants={fadeUp}>
+        <p className="text-base text-white/30 max-w-md leading-relaxed">
           Interactive components for AI-native interfaces.
+          <br />
           Reasoning, decision, action, output.
         </p>
       </motion.div>
 
-      {/* Grid */}
-      <motion.div className="space-y-12" variants={stagger}>
+      {/* Components */}
+      <motion.div variants={stagger}>
         {categories.map((cat) => {
           const components = getComponentsByCategory(cat.slug);
           return (
@@ -47,27 +45,46 @@ export default function HomePage() {
               <h2 className="text-xs font-medium text-white/25 uppercase tracking-widest mb-4">
                 {cat.name}
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-4">
                 {components.map((comp) => {
                   const Preview = previewMap[comp.slug];
                   return (
                     <motion.div key={comp.slug} variants={fadeUp}>
                       <Link
                         href={`/components/${comp.category}/${comp.slug}`}
-                        className="group block rounded-2xl bg-surface-1/60 overflow-hidden hover:bg-surface-2/60 transition-all duration-200"
+                        className="group block rounded-2xl bg-surface-1/60 overflow-hidden hover:bg-surface-2/60 transition-all duration-300"
                       >
-                        <div className="relative h-[200px] flex items-center justify-center p-5 overflow-hidden">
-                          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-surface-1 to-transparent z-10 pointer-events-none" />
-                          <div className="w-full scale-[0.85] origin-center pointer-events-none select-none">
+                        {/* Live preview */}
+                        <div className="relative h-[240px] flex items-center justify-center p-8 overflow-hidden">
+                          {/* Ambient glow behind component */}
+                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[200px] rounded-full bg-purple-500/[0.04] blur-3xl pointer-events-none" />
+                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[120px] rounded-full bg-orange-500/[0.03] blur-2xl pointer-events-none translate-x-10" />
+
+                          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-surface-1 to-transparent z-10 pointer-events-none" />
+                          <div className="w-full max-w-lg origin-center pointer-events-none select-none relative z-[1]">
                             {Preview && <Preview />}
                           </div>
                         </div>
-                        <div className="px-4 py-3">
-                          <div className="text-sm font-semibold font-mono text-white/70 group-hover:text-white transition-colors duration-200">
-                            {comp.name}
+
+                        {/* Info */}
+                        <div className="px-5 py-4 flex items-center justify-between">
+                          <div>
+                            <div className="text-sm font-semibold font-mono text-white/70 group-hover:text-white transition-colors duration-200">
+                              {comp.name}
+                            </div>
+                            <div className="text-xs text-white/20 mt-0.5">
+                              {comp.description}
+                            </div>
                           </div>
-                          <div className="text-xs text-white/20 mt-0.5 truncate">
-                            {comp.description}
+                          <div className="flex gap-1.5">
+                            {comp.tags.map((tag) => (
+                              <span
+                                key={tag}
+                                className="px-2 py-0.5 rounded-md text-[10px] text-white/15 bg-white/[0.03]"
+                              >
+                                {tag}
+                              </span>
+                            ))}
                           </div>
                         </div>
                       </Link>
