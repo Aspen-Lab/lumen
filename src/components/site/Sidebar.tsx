@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  X, Menu, MessageSquare, Zap, Brain, Activity,
-  Scale, BarChart3, Sparkles, Layers, Play, Eye,
+  X, Menu, MessageSquare, Zap, Sparkles,
   BookOpen, Gamepad2, FileText, Search
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -15,26 +14,8 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-const categoryIcons: Record<string, React.ElementType> = {
-  action: Zap,
-  reasoning: Brain,
-  decision: Scale,
-  output: Sparkles,
-  motion: Play,
-};
-
 const componentIcons: Record<string, React.ElementType> = {
   "prompt-input": MessageSquare,
-  "smart-cta": Zap,
-  "thinking-loader": Activity,
-  "reasoning-steps": Layers,
-  "decision-card": Scale,
-  "confidence-meter": BarChart3,
-  "result-reveal": Eye,
-  "streaming-text": Activity,
-  "source-citation": BookOpen,
-  "insight-stack": Layers,
-  "progressive-blur-reveal": Play,
 };
 
 export function Sidebar({ open, onClose }: SidebarProps) {
@@ -111,7 +92,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         <div className="px-3 py-3">
           <div className="h-px bg-white/[0.04] mb-2" />
           {[
-            { label: "Patterns", icon: BookOpen, live: true },
+            { label: "Patterns", icon: BookOpen, live: false },
             { label: "Playground", icon: Gamepad2, live: false },
             { label: "Docs", icon: FileText, live: false },
           ].map(({ label, icon: Icon, live }) => (

@@ -283,7 +283,7 @@ function ColorPicker({
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
-  const interactTimer = useRef<ReturnType<typeof setTimeout>>();
+  const interactTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const [, forceRender] = useState(0);
 
   const commit = (h: number, s: number, v: number) => {

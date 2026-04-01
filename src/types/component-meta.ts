@@ -1,10 +1,4 @@
-export type ComponentCategory =
-  | "primitives"
-  | "action"
-  | "reasoning"
-  | "decision"
-  | "output"
-  | "motion";
+export type ComponentCategory = "action";
 
 export type ComponentTag =
   | "LLM"
