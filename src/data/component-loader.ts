@@ -1,10 +1,12 @@
 import { ControlDefinition } from "@/types/controls";
+import { BlueprintNode } from "@/types/blueprint";
 
 export interface ComponentEntry {
   desktop: React.ComponentType<Record<string, unknown>>;
   mobile: React.ComponentType<Record<string, unknown>>;
   controls: ControlDefinition[];
   code: string | ((props: Record<string, unknown>) => string);
+  blueprint?: BlueprintNode[];
 }
 
 type LazyModule = {
@@ -45,11 +47,23 @@ export async function loadComponent(slug: string): Promise<ComponentEntry | null
     lazy.code(),
   ]);
 
+  // Try loading blueprint (optional)
+  let blueprint: BlueprintNode[] | undefined;
+  try {
+    const bpMod = await import(`@/components/library/action/PromptInput/blueprint`);
+    if (slug === "prompt-input" && bpMod.promptInputBlueprint) {
+      blueprint = bpMod.promptInputBlueprint;
+    }
+  } catch {
+    // No blueprint for this component
+  }
+
   const entry: ComponentEntry = {
     desktop: (desktopMod as Record<string, React.ComponentType<Record<string, unknown>>>)[lazy.exports.desktop],
     mobile: (mobileMod as Record<string, React.ComponentType<Record<string, unknown>>>)[lazy.exports.mobile],
     controls: (controlsMod as Record<string, ControlDefinition[]>)[lazy.exports.controls],
     code: (codeMod as Record<string, string | ((props: Record<string, unknown>) => string)>)[lazy.exports.code],
+    blueprint,
   };
 
   cache.set(slug, entry);

@@ -11,8 +11,10 @@ import { ControlsPanel } from "@/components/site/ControlsPanel";
 import { getPresetsForComponent } from "@/data/presets";
 import { ControlDefinition } from "@/types/controls";
 import { cn } from "@/lib/utils";
+import { CodeBlock } from "@/components/site/CodeBlock";
 import { CodeHighlight } from "@/components/site/CodeHighlight";
 import { CopyToast } from "@/components/site/CopyToast";
+import { BlueprintView } from "@/components/site/BlueprintView";
 
 function parseSearchParams(
   searchParams: URLSearchParams,
@@ -42,7 +44,36 @@ function serializeValues(
   return params.toString();
 }
 
-type ViewTab = "preview" | "code";
+function generateUsageSnippet(
+  name: string,
+  values: Record<string, unknown>,
+  defaults: Record<string, unknown>
+): string {
+  const customProps = Object.entries(values)
+    .filter(([k, v]) => v !== undefined && v !== defaults[k])
+    .map(([k, v]) => {
+      if (typeof v === "string") return `  ${k}="${v}"`;
+      if (typeof v === "boolean") return v ? `  ${k}` : `  ${k}={false}`;
+      return `  ${k}={${JSON.stringify(v)}}`;
+    });
+
+  const importLine = `import { ${name} } from "./${name}"`;
+  const jsx = customProps.length > 0
+    ? `<${name}\n${customProps.join("\n")}\n/>`
+    : `<${name} />`;
+
+  return `${importLine}\n\n${jsx}`;
+}
+
+function getSourceCode(resolvedCode: string): string {
+  // Strip the "// Usage\n<Component.../>\n\n" prefix if present
+  const marker = '"use client"';
+  const idx = resolvedCode.indexOf(marker);
+  if (idx > 0) return resolvedCode.slice(idx);
+  return resolvedCode;
+}
+
+type ViewTab = "preview" | "code" | "blueprint";
 
 export default function ComponentPage() {
   const params = useParams();
@@ -57,6 +88,7 @@ export default function ComponentPage() {
   const [copied, setCopied] = useState(false);
   const [shared, setShared] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [pkgMgr, setPkgMgr] = useState<"npm" | "pnpm" | "yarn" | "bun">("npm");
   const [controlValues, setControlValues] = useState<Record<string, unknown>>({});
 
   const meta = getComponentBySlug(slug);
@@ -148,7 +180,7 @@ export default function ComponentPage() {
       {/* Pill toggle bar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1 rounded-xl bg-surface-2/80 p-1 relative">
-          {(["preview", "code"] as const).map((tab) => (
+          {(["preview", "code", "blueprint"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setView(tab)}
@@ -156,7 +188,8 @@ export default function ComponentPage() {
                 "relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 z-[1]",
                 view === tab
                   ? "text-white"
-                  : "text-white/30 hover:text-white/55"
+                  : "text-white/30 hover:text-white/55",
+                tab === "blueprint" && !entry.blueprint && "hidden"
               )}
             >
               {view === tab && (
@@ -172,10 +205,15 @@ export default function ComponentPage() {
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                   Preview
                 </>
-              ) : (
+              ) : tab === "code" ? (
                 <>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                   Code
+                </>
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8l2.8-2.8M17 7l2.8-2.8"/></svg>
+                  Blueprint
                 </>
               )}
               </span>
@@ -192,21 +230,80 @@ export default function ComponentPage() {
             {shared ? "Copied URL" : "Share"}
           </button>
 
-          {view === "preview" ? (
+          {view === "preview" && (
             <DeviceToggle device={device} onChange={setDevice} />
-          ) : (
-            <button
-              onClick={handleCopy}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-white/30 hover:text-white/60 hover:bg-white/[0.04] transition-all"
-            >
-              {copied ? <Check size={14} className="text-white/70" /> : <Copy size={14} />}
-              {copied ? "Copied" : "Copy"}
-            </button>
           )}
         </div>
       </div>
 
-      {/* Main window */}
+      {/* Tech stack + Install + Usage — code mode only */}
+      {view === "code" && (
+        <div className="space-y-8">
+          {/* Tech Stack */}
+          <div>
+            <h3 className="text-lg font-semibold text-white/80 mb-3">Tech Stack</h3>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { name: "React", icon: "⚛" },
+                { name: "TypeScript", icon: "TS" },
+                { name: "Framer Motion", icon: "FM" },
+                { name: "Tailwind CSS", icon: "TW" },
+                { name: "Next.js", icon: "▲" },
+              ].map((t) => (
+                <div
+                  key={t.name}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-1/80 text-sm"
+                >
+                  <span className="text-[11px] font-mono text-white/25 w-5 text-center">{t.icon}</span>
+                  <span className="text-white/50">{t.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Install */}
+          <div>
+            <h3 className="text-lg font-semibold text-white/80 mb-3">Install</h3>
+            <div className="flex items-center gap-2 mb-3">
+              {(["npm", "pnpm", "yarn", "bun"] as const).map((pm) => (
+                <button
+                  key={pm}
+                  onClick={() => setPkgMgr(pm)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg text-xs font-mono transition-all",
+                    pkgMgr === pm
+                      ? "bg-white/[0.08] text-white/70"
+                      : "text-white/25 hover:text-white/45"
+                  )}
+                >
+                  {pm}
+                </button>
+              ))}
+            </div>
+            <CodeBlock
+              code={
+                pkgMgr === "npm" ? "npm install framer-motion clsx tailwind-merge" :
+                pkgMgr === "pnpm" ? "pnpm add framer-motion clsx tailwind-merge" :
+                pkgMgr === "yarn" ? "yarn add framer-motion clsx tailwind-merge" :
+                "bun add framer-motion clsx tailwind-merge"
+              }
+              lang="bash"
+            />
+          </div>
+
+          {/* Usage */}
+          <div>
+            <h3 className="text-lg font-semibold text-white/80 mb-3">Usage</h3>
+            <CodeBlock code={generateUsageSnippet(meta.name, controlValues, defaultValues)} />
+          </div>
+        </div>
+      )}
+
+      {/* Main window — Code label when in code mode */}
+      {view === "code" && (
+        <h3 className="text-lg font-semibold text-white/80">Code</h3>
+      )}
+
       <div className="rounded-2xl bg-surface-1/60 backdrop-blur-sm overflow-hidden shadow-2xl shadow-black/20">
         <AnimatePresence mode="wait">
         {view === "preview" ? (
@@ -272,7 +369,8 @@ export default function ComponentPage() {
               </span>
             </div>
           </motion.div>
-        ) : (
+        ) : null}
+        {view === "code" && (
           <motion.div
             key="code"
             initial={{ opacity: 0 }}
@@ -280,14 +378,28 @@ export default function ComponentPage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <CodeHighlight code={resolvedCode} />
+            <CodeHighlight code={getSourceCode(resolvedCode)} />
+          </motion.div>
+        )}
+        {view === "blueprint" && entry.blueprint && (
+          <motion.div
+            key="blueprint"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <BlueprintView
+              nodes={entry.blueprint}
+              component={<Component {...controlValues} />}
+            />
           </motion.div>
         )}
         </AnimatePresence>
       </div>
 
-      {/* Controls */}
-      {entry.controls.length > 0 && (
+      {/* Controls — only in preview mode */}
+      {view === "preview" && entry.controls.length > 0 && (
         <div>
           <h2 className="text-xl font-semibold text-white/80 mb-4">Customize</h2>
           <ControlsPanel
