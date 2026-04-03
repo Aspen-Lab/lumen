@@ -20,7 +20,7 @@ export function TopBar() {
   }, []);
 
   return (
-    <div className="fixed top-3 right-4 z-40">
+    <div className="fixed top-[72px] right-4 z-40">
       <motion.a
         href={`https://github.com/${REPO}`}
         target="_blank"

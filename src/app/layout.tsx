@@ -17,6 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
@@ -25,17 +26,19 @@ export default function RootLayout({
         <SearchPalette />
         <Cursor />
         <div className="relative z-[1] flex min-h-screen">
-          <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+          <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} collapsed={collapsed} onToggleCollapse={() => setCollapsed(!collapsed)} />
 
           <div className="flex-1 flex flex-col min-w-0">
             {/* Top bar — status info + mobile menu */}
-            <header className="sticky top-0 z-30 flex items-center justify-between h-12 px-4 lg:px-6 bg-surface-0/95 backdrop-blur-xl border-b border-white/[0.03]">
-              <SidebarTrigger onClick={() => setSidebarOpen(true)} />
+            <header className="sticky top-0 z-30 flex items-center h-16 bg-surface-0/95 backdrop-blur-xl border-b border-white/[0.03]">
+              <div className="lg:hidden px-2">
+                <SidebarTrigger onClick={() => setSidebarOpen(true)} />
+              </div>
               <StatusBar />
             </header>
             <TopBar />
 
-            <main className="flex-1 px-6 lg:px-10 py-6 lg:py-8 bg-surface-0/95 backdrop-blur-sm">
+            <main className="flex-1 px-6 lg:px-10 py-6 lg:py-8 relative bg-surface-0">
               <div className="max-w-content mx-auto">
                 {children}
               </div>

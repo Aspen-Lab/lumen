@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { springSnap, springSmooth } from "@/lib/motion";
 
-export function Logo({ className = "" }: { className?: string }) {
+export function Logo({ className = "", collapsed = false }: { className?: string; collapsed?: boolean }) {
   return (
     <motion.svg
       width="91"
@@ -73,10 +73,11 @@ export function Logo({ className = "" }: { className?: string }) {
       <motion.g
         fill="url(#logo-text)"
         variants={{
-          idle: { x: 0, opacity: 0.9 },
-          hover: { x: 2, opacity: 1 },
+          idle: { x: 0, opacity: collapsed ? 0 : 0.9 },
+          hover: { x: 2, opacity: collapsed ? 0 : 1 },
         }}
         transition={springSmooth}
+        style={{ pointerEvents: collapsed ? "none" : "auto" }}
       >
         {/* L */}
         <motion.path

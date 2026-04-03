@@ -40,11 +40,14 @@ export default function HomePage() {
           <CharacterUniverse />
         </div>
 
+        {/* Content overlay — darkens the code bg so text is readable */}
+        <div className="absolute inset-0 z-[1] bg-surface-0/70 pointer-events-none" />
+
         {/* Edge fades */}
-        <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-surface-0 to-transparent z-[1] pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-surface-0 to-transparent z-[1] pointer-events-none" />
-        <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-surface-0 to-transparent z-[1] pointer-events-none" />
-        <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-surface-0 to-transparent z-[1] pointer-events-none" />
+        <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-surface-0 to-transparent z-[1] pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-surface-0 to-transparent z-[1] pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-surface-0 to-transparent z-[1] pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-surface-0 to-transparent z-[1] pointer-events-none" />
 
         {/* Content — two columns */}
         <div className="relative z-[2] flex items-center min-h-[60vh] px-8 lg:px-12 py-16">

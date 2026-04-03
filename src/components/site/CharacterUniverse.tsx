@@ -79,16 +79,19 @@ export function CharacterUniverse() {
 
       ctx.clearRect(0, 0, w, h);
 
-      // Ghost push zones — recalculated every frame based on current w/h
+      // Ghost push zones — match the hero layout (left text, right atom)
+      // Hero has px-8(32px) lg:px-12(48px) and py-16(64px)
+      const pad = 48;
+      const textBlockW = (w - pad * 2) * 0.5;
       const pushZones = [
-        // Title area
-        { x: w * 0.22, y: h * 0.32, r: 160 },
-        // Subtitle + stats
-        { x: w * 0.25, y: h * 0.58, r: 130 },
-        // Bohr atom
-        { x: w * 0.72, y: h * 0.48, r: 190 },
-        // Mouse cursor — small push
-        { x: mouseX, y: mouseY, r: 50 },
+        // Title "Build AI interfaces." — top-left of content area
+        { x: pad + textBlockW * 0.4, y: h * 0.28, r: textBlockW * 0.55 },
+        // Subtitle + stats + CTA
+        { x: pad + textBlockW * 0.4, y: h * 0.62, r: textBlockW * 0.45 },
+        // Bohr atom — right half center
+        { x: w - pad - textBlockW * 0.5, y: h * 0.5, r: 180 },
+        // Mouse
+        { x: mouseX, y: mouseY, r: 45 },
       ];
 
       ctx.font = FONT;
