@@ -50,18 +50,55 @@ export function CharacterUniverse() {
 
     const FONT = "12px monospace";
     const LINE_H = 18;
-    function layoutText() {
-      const cpl = Math.floor((w - 40) / 7.2); // chars per line based on monospace ~7.2px
+    let usePretextLayout = false;
+
+    function layoutWithPretext(prepareFn: Function, layoutFn: Function) {
+      try {
+        const prepared = prepareFn(CODE_TEXT, FONT);
+        const result = layoutFn(prepared, w - 40, LINE_H);
+        const totalLines = Math.max(result.lineCount, 1);
+        const cpl = Math.floor(CODE_TEXT.length / totalLines);
+        textLines = [];
+        for (let i = 0; i < CODE_TEXT.length; i += cpl) {
+          textLines.push(CODE_TEXT.slice(i, i + cpl));
+        }
+        usePretextLayout = true;
+      } catch {
+        layoutFallback();
+      }
+      fillLines();
+    }
+
+    function layoutFallback() {
+      const cpl = Math.floor((w - 40) / 7.2);
       textLines = [];
       for (let i = 0; i < CODE_TEXT.length; i += cpl) {
         textLines.push(CODE_TEXT.slice(i, i + cpl));
       }
+    }
+
+    function fillLines() {
       while (textLines.length * LINE_H < h + 100) {
         textLines.push(...textLines.slice(0, 10));
       }
     }
 
+    function layoutText() {
+      layoutFallback();
+      fillLines();
+    }
+
     resize();
+
+    // Load Pretext client-side for accurate text measurement
+    (async () => {
+      try {
+        const pretext = await import(/* webpackIgnore: true */ "https://esm.sh/@chenglou/pretext@0.18.4");
+        layoutWithPretext(pretext.prepare, pretext.layout);
+      } catch {
+        // Pretext unavailable, fallback already running
+      }
+    })();
 
     // Atom orbs
     const orbs: Orb[] = ATOM_ORBS.map((a) => ({
@@ -95,28 +132,12 @@ export function CharacterUniverse() {
 
       ctx.clearRect(0, 0, w, h);
 
-      // ── Text wall ──
-      ctx.font = FONT;
-      ctx.fillStyle = "rgba(255, 255, 255, 0.04)";
-
-      const scrollOffset = (scrollY * 0.15) % LINE_H;
-      for (let i = 0; i < textLines.length; i++) {
-        const y = i * LINE_H - scrollOffset;
-        if (y > h + 20 || y < -20) continue;
-        ctx.fillText(textLines[i], 20, y);
-      }
-
-      // ── Orbs ──
+      // ── Update orbs first ──
       for (const orb of orbs) {
-        // Move
         orb.x += orb.vx;
         orb.y += orb.vy;
-
-        // Bounce off walls
         if (orb.x < orb.r || orb.x > w - orb.r) orb.vx *= -1;
         if (orb.y < orb.r || orb.y > h - orb.r) orb.vy *= -1;
-
-        // Mouse repulsion
         const dx = orb.x - mouseX;
         const dy = orb.y - mouseY;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -125,57 +146,112 @@ export function CharacterUniverse() {
           orb.vx += (dx / dist) * force;
           orb.vy += (dy / dist) * force;
         }
-
-        // Damping
         orb.vx *= 0.995;
         orb.vy *= 0.995;
-
-        // Speed limit
         const speed = Math.sqrt(orb.vx * orb.vx + orb.vy * orb.vy);
-        if (speed > 2) {
-          orb.vx = (orb.vx / speed) * 2;
-          orb.vy = (orb.vy / speed) * 2;
+        if (speed > 2) { orb.vx = (orb.vx / speed) * 2; orb.vy = (orb.vy / speed) * 2; }
+      }
+
+      // ── Text wall — optimized: only per-char near orbs ──
+      const CHAR_W = 7.2;
+      const scrollOffset = (scrollY * 0.15) % LINE_H;
+      const PUSH_R = 60;
+
+      ctx.font = FONT;
+
+      // Pre-compute which line ranges are near any orb
+      const orbLineRanges: { minLine: number; maxLine: number }[] = orbs.map((orb) => ({
+        minLine: Math.floor((orb.y - PUSH_R - 10 + scrollOffset) / LINE_H) - 1,
+        maxLine: Math.ceil((orb.y + PUSH_R + 10 + scrollOffset) / LINE_H) + 1,
+      }));
+
+      // Pre-parse orb colors once
+      const orbRGB = orbs.map((o) => ({
+        r: parseInt(o.color.slice(1, 3), 16),
+        g: parseInt(o.color.slice(3, 5), 16),
+        b: parseInt(o.color.slice(5, 7), 16),
+      }));
+
+      for (let i = 0; i < textLines.length; i++) {
+        const baseY = i * LINE_H - scrollOffset;
+        if (baseY > h + 20 || baseY < -20) continue;
+
+        // Is this line near any orb?
+        let nearOrb = false;
+        for (let oi = 0; oi < orbs.length; oi++) {
+          if (i >= orbLineRanges[oi].minLine && i <= orbLineRanges[oi].maxLine) {
+            nearOrb = true;
+            break;
+          }
         }
 
+        if (!nearOrb) {
+          // Fast path — draw whole line
+          ctx.fillStyle = "rgba(255,255,255,0.04)";
+          ctx.fillText(textLines[i], 20, baseY);
+          continue;
+        }
+
+        // Slow path — per-character displacement
+        const line = textLines[i];
+        for (let c = 0; c < line.length; c++) {
+          let cx = 20 + c * CHAR_W;
+          let cy = baseY;
+          let alpha = 0.04;
+          let cr = 255, cg = 255, cb = 255;
+
+          for (let oi = 0; oi < orbs.length; oi++) {
+            const orb = orbs[oi];
+            const dx = cx - orb.x;
+            const dy = cy - orb.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < PUSH_R) {
+              const s = 1 - dist / PUSH_R;
+              const push = s * s * 25;
+              const nd = dist > 0.1 ? 1 / dist : 0;
+              cx += dx * nd * push;
+              cy += dy * nd * push;
+              alpha = Math.max(alpha, 0.04 + s * 0.14);
+              const m = s * 0.8;
+              cr = Math.round(cr * (1 - m) + orbRGB[oi].r * m);
+              cg = Math.round(cg * (1 - m) + orbRGB[oi].g * m);
+              cb = Math.round(cb * (1 - m) + orbRGB[oi].b * m);
+            }
+          }
+
+          ctx.fillStyle = `rgba(${cr},${cg},${cb},${alpha})`;
+          ctx.fillText(line[c], cx, cy);
+        }
+      }
+
+      // ── Draw orbs ──
+      for (const orb of orbs) {
         // Glow
         const gradient = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orb.r * 3);
-        gradient.addColorStop(0, orb.color + "12");
-        gradient.addColorStop(0.5, orb.color + "06");
+        gradient.addColorStop(0, orb.color + "15");
+        gradient.addColorStop(0.5, orb.color + "08");
         gradient.addColorStop(1, "transparent");
         ctx.fillStyle = gradient;
         ctx.beginPath();
         ctx.arc(orb.x, orb.y, orb.r * 3, 0, Math.PI * 2);
         ctx.fill();
 
-        // Orb circle
+        // Circle
         ctx.beginPath();
         ctx.arc(orb.x, orb.y, orb.r, 0, Math.PI * 2);
-        ctx.fillStyle = orb.color + "15";
+        ctx.fillStyle = orb.color + "18";
         ctx.fill();
-        ctx.strokeStyle = orb.color + "25";
+        ctx.strokeStyle = orb.color + "30";
         ctx.lineWidth = 1;
         ctx.stroke();
 
         // Label
         ctx.font = "500 9px monospace";
-        ctx.fillStyle = orb.color + "50";
+        ctx.fillStyle = orb.color + "60";
         ctx.textAlign = "center";
         ctx.fillText(orb.name, orb.x, orb.y + 3);
         ctx.textAlign = "start";
-
-        // Distort text near orb — brighten characters close to the orb
         ctx.font = FONT;
-        const nearY = Math.floor(orb.y / LINE_H);
-        for (let li = nearY - 2; li <= nearY + 2; li++) {
-          if (li < 0 || li >= textLines.length) continue;
-          const lineY = li * LINE_H - scrollOffset;
-          const lineDist = Math.abs(lineY - orb.y);
-          if (lineDist < orb.r * 2.5) {
-            const brightness = 1 - lineDist / (orb.r * 2.5);
-            ctx.fillStyle = orb.color + Math.floor(brightness * 25).toString(16).padStart(2, "0");
-            ctx.fillText(textLines[li], 20, lineY);
-          }
-        }
       }
     };
 

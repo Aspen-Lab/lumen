@@ -30,12 +30,12 @@ export default function RootLayout({
 
           <div className="flex-1 flex flex-col min-w-0">
             {/* Slim top bar — just GitHub link + mobile menu */}
-            <header className="sticky top-0 z-30 flex items-center justify-between h-12 px-4 lg:px-6 bg-surface-0/80 backdrop-blur-md">
+            <header className="sticky top-0 z-30 flex items-center justify-between h-12 px-4 lg:px-6 bg-surface-0/95 backdrop-blur-xl border-b border-white/[0.03]">
               <SidebarTrigger onClick={() => setSidebarOpen(true)} />
               <TopBar />
             </header>
 
-            <main className="flex-1 px-6 lg:px-10 py-6 lg:py-8">
+            <main className="flex-1 px-6 lg:px-10 py-6 lg:py-8 bg-surface-0/95 backdrop-blur-sm">
               <div className="max-w-content mx-auto">
                 {children}
               </div>
