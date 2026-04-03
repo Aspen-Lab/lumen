@@ -7,7 +7,6 @@ import "@/styles/globals.css";
 import { Sidebar, SidebarTrigger } from "@/components/site/Sidebar";
 import { TopBar } from "@/components/site/TopBar";
 import { DotGrid } from "@/components/site/DotGrid";
-import { CharacterUniverse } from "@/components/site/CharacterUniverse";
 import { SearchPalette } from "@/components/site/SearchPalette";
 import { Cursor } from "@/components/site/Cursor";
 
@@ -21,7 +20,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body className="font-sans bg-surface-0 text-white/[0.88] antialiased">
-        <CharacterUniverse />
         <DotGrid />
         <SearchPalette />
         <Cursor />

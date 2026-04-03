@@ -8,6 +8,7 @@ import { atomRegistry } from "@/data/atom-registry";
 import { ROLE_COLORS, type AtomRole } from "@/types/atom";
 import { PromptInput } from "@/components/library/action/PromptInput";
 import { TiltCard } from "@/components/site/TiltCard";
+import { CharacterUniverse } from "@/components/site/CharacterUniverse";
 import { ArrowRight } from "lucide-react";
 
 const previewMap: Record<string, React.ComponentType> = {
@@ -30,24 +31,17 @@ export default function HomePage() {
       {/* ── Hero ── */}
       <motion.div
         ref={heroRef}
-        className="relative pt-10 pb-16 min-h-[50vh] flex flex-col justify-center"
+        className="relative pt-10 pb-16 min-h-[50vh] flex flex-col justify-center overflow-hidden rounded-2xl"
         style={{ opacity: heroOpacity, y: heroY, scale: heroScale }}
       >
-        {/* Background orbs */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-          <motion.div
-            className="w-[500px] h-[300px] rounded-full bg-purple-500/[0.04] blur-[80px]"
-            animate={{ scale: [1, 1.1, 1], rotate: [0, 3, 0] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          />
+        {/* Character Universe background */}
+        <div className="absolute inset-0 z-0">
+          <CharacterUniverse />
         </div>
-        <div className="absolute top-1/3 right-1/4 pointer-events-none">
-          <motion.div
-            className="w-[200px] h-[200px] rounded-full bg-orange-500/[0.03] blur-[60px]"
-            animate={{ scale: [1, 1.15, 1], x: [0, 20, 0] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          />
-        </div>
+
+        {/* Fade edges */}
+        <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-surface-0 to-transparent z-[1] pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-surface-0 to-transparent z-[1] pointer-events-none" />
 
         {/* Text */}
         <div className="relative z-[1] space-y-6">

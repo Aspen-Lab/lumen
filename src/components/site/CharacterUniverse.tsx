@@ -38,8 +38,9 @@ export function CharacterUniverse() {
     let textLines: string[] = [];
 
     const resize = () => {
-      w = window.innerWidth;
-      h = window.innerHeight;
+      const rect = canvas.parentElement?.getBoundingClientRect();
+      w = rect ? rect.width : canvas.clientWidth;
+      h = rect ? rect.height : canvas.clientHeight;
       canvas.width = w * dpr;
       canvas.height = h * dpr;
       canvas.style.width = w + "px";
@@ -111,16 +112,17 @@ export function CharacterUniverse() {
       color: a.color,
     }));
 
-    // Mouse
+    // Mouse — relative to canvas container
     let mouseX = w / 2;
     let mouseY = h / 2;
-    const onMouse = (e: MouseEvent) => { mouseX = e.clientX; mouseY = e.clientY; };
+    const onMouse = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+    };
     window.addEventListener("mousemove", onMouse, { passive: true });
 
-    // Scroll offset for text movement
-    let scrollY = 0;
-    const onScroll = () => { scrollY = window.scrollY; };
-    window.addEventListener("scroll", onScroll, { passive: true });
+    const scrollY = 0;
 
     let animId: number;
     let lastTime = 0;
@@ -261,7 +263,6 @@ export function CharacterUniverse() {
     return () => {
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMouse);
-      window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(animId);
     };
   }, []);
@@ -269,7 +270,7 @@ export function CharacterUniverse() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 z-0 pointer-events-none"
+      className="absolute inset-0 w-full h-full pointer-events-none"
       aria-hidden="true"
     />
   );

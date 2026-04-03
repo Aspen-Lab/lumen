@@ -38,12 +38,35 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-sidebar bg-[#0A0A10] flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]",
+          "fixed top-0 left-0 z-50 h-full w-sidebar flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)] backdrop-blur-2xl",
           "lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:z-auto",
           open ? "translate-x-0" : "-translate-x-full"
         )}
+        style={{
+          background: "linear-gradient(180deg, rgba(14,14,22,0.85) 0%, rgba(10,10,16,0.92) 40%, rgba(8,8,12,0.95) 100%)",
+        }}
       >
-        <div className="absolute top-0 right-0 bottom-0 w-px bg-white/[0.06]" />
+        {/* Right edge — gradient border, brighter near top */}
+        <div
+          className="absolute top-0 right-0 bottom-0 w-px"
+          style={{
+            background: "linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.01) 100%)",
+          }}
+        />
+        {/* Top inner glow — subtle warmth near logo */}
+        <div
+          className="absolute top-0 left-0 right-0 h-40 pointer-events-none rounded-tl-lg overflow-hidden"
+          style={{
+            background: "radial-gradient(ellipse 90% 70% at 30% -15%, rgba(124,92,252,0.06) 0%, transparent 70%)",
+          }}
+        />
+        {/* Inner highlight edge — top */}
+        <div
+          className="absolute top-0 left-0 right-0 h-px pointer-events-none"
+          style={{
+            background: "linear-gradient(90deg, transparent 10%, rgba(255,255,255,0.06) 50%, transparent 90%)",
+          }}
+        />
 
         {/* Logo + close */}
         <div className="flex items-center justify-between px-5 h-14">
@@ -58,8 +81,16 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           </button>
         </div>
 
+        {/* Logo divider — faint glow line */}
+        <div
+          className="mx-4 h-px"
+          style={{
+            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.06) 50%, transparent)",
+          }}
+        />
+
         {/* Nav tabs */}
-        <div className="px-3 flex items-center gap-1 mb-1">
+        <div className="px-3 flex items-center gap-1 mb-1 mt-2">
           {[
             { href: "/", label: "Components", match: (p: string) => p === "/" || p.startsWith("/components") },
             { href: "/atoms", label: "Atoms", match: (p: string) => p.startsWith("/atoms") },
@@ -156,7 +187,12 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
         {/* Footer links */}
         <div className="px-3 py-3">
-          <div className="h-px bg-white/[0.04] mb-2" />
+          <div
+            className="h-px mb-2 mx-1"
+            style={{
+              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.05) 50%, transparent)",
+            }}
+          />
           {[
             { label: "Playground", icon: Gamepad2 },
             { label: "Docs", icon: FileText },
