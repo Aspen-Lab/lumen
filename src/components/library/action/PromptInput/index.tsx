@@ -30,11 +30,11 @@
  */
 
 import { useState } from "react";
-import { GlowBorder } from "./parts/GlowBorder";
-import { AutoTextarea } from "./parts/AutoTextarea";
-import { ToolbarButton } from "./parts/ToolbarButton";
-import { MicToggle } from "./parts/MicToggle";
-import { SendButton } from "./parts/SendButton";
+import { GlowBorder } from "@/components/atoms/surface/GlowBorder";
+import { AutoTextarea } from "@/components/atoms/input/AutoTextarea";
+import { ToolbarButton } from "@/components/atoms/action/ToolbarButton";
+import { MicToggle } from "@/components/atoms/control/MicToggle";
+import { SendButton } from "@/components/atoms/action/SendButton";
 
 export interface PromptInputProps {
   placeholder?: string;

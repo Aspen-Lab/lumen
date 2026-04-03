@@ -1,9 +1,15 @@
 "use client";
 
-import { useRef, useState } from "react";
-import Link from "next/link";
+import { useRef, useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ROLE_COLORS, type AtomMeta } from "@/types/atom";
+import { getComponentsUsingAtom, getComponentName } from "@/data/composition-registry";
+
+const AtomDemo = dynamic(() => import("./AtomDemo"), {
+  ssr: false,
+  loading: () => <div className="w-full h-full" />,
+});
 
 interface AtomCardProps {
   atom: AtomMeta;
@@ -15,6 +21,7 @@ export function AtomCard({ atom, index }: AtomCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState(false);
   const [glowPos, setGlowPos] = useState({ x: 50, y: 50 });
+  const usedBy = getComponentsUsingAtom(atom.slug);
 
   const handleMove = (e: React.MouseEvent) => {
     const rect = ref.current?.getBoundingClientRect();
@@ -31,88 +38,76 @@ export function AtomCard({ atom, index }: AtomCardProps) {
       onMouseMove={handleMove}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+      className="group rounded-xl bg-surface-1/60 overflow-hidden transition-colors duration-200 relative"
     >
-      <Link
-        href={`/atoms/${atom.slug}`}
-        className="group block rounded-xl bg-surface-1/60 overflow-hidden transition-colors duration-200 relative"
-      >
-        {/* Mouse-following glow */}
-        <div
-          className="absolute inset-0 rounded-xl pointer-events-none z-[1] transition-opacity duration-300"
-          style={{
-            opacity: hover ? 1 : 0,
-            background: `radial-gradient(circle 120px at ${glowPos.x}% ${glowPos.y}%, ${color}08 0%, transparent 100%)`,
-          }}
-        />
+      {/* Mouse-following glow */}
+      <div
+        className="absolute inset-0 rounded-xl pointer-events-none z-[1] transition-opacity duration-300"
+        style={{
+          opacity: hover ? 1 : 0,
+          background: `radial-gradient(circle 120px at ${glowPos.x}% ${glowPos.y}%, ${color}08 0%, transparent 100%)`,
+        }}
+      />
 
-        {/* Top accent line */}
-        <motion.div
-          className="h-px"
-          style={{
-            background: `linear-gradient(to right, transparent, ${color}${hover ? "40" : "15"}, transparent)`,
-            transition: "background 0.3s",
-          }}
-        />
+      {/* Top accent line */}
+      <motion.div
+        className="h-px"
+        style={{
+          background: `linear-gradient(to right, transparent, ${color}${hover ? "40" : "15"}, transparent)`,
+          transition: "background 0.3s",
+        }}
+      />
 
-        {/* Preview area */}
-        <div className="h-[90px] flex items-center justify-center relative overflow-hidden">
-          {/* Orbital ring */}
-          <motion.div
-            className="absolute w-16 h-16 rounded-full"
-            style={{
-              border: `1px solid ${color}`,
-              opacity: hover ? 0.12 : 0.04,
-              transition: "opacity 0.3s",
-            }}
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          />
+      {/* Preview area — live demo */}
+      <div className="h-[90px] flex items-center justify-center relative overflow-hidden px-3">
+        <AtomDemo slug={atom.slug} />
+      </div>
 
-          {/* Center letter */}
-          <motion.span
-            className="text-2xl font-bold font-mono select-none relative z-[1]"
-            style={{ color }}
-            animate={{
-              opacity: hover ? 0.35 : 0.1,
-              scale: hover ? 1.1 : 1,
-            }}
-            transition={{ duration: 0.2 }}
-          >
-            {atom.name.charAt(0)}
-          </motion.span>
+      {/* Meta */}
+      <div className="px-3.5 py-3 space-y-1.5 relative z-[2]">
+        <div className="text-sm font-semibold font-mono text-white/70 group-hover:text-white transition-colors duration-200">
+          {atom.name}
+        </div>
+        <div className="text-[11px] text-white/25 leading-relaxed line-clamp-1">
+          {atom.description}
         </div>
 
-        {/* Meta */}
-        <div className="px-3.5 py-3 space-y-1.5 relative z-[2]">
-          <div className="text-sm font-semibold font-mono text-white/70 group-hover:text-white transition-colors duration-200">
-            {atom.name}
-          </div>
-          <div className="text-[11px] text-white/25 leading-relaxed line-clamp-1">
-            {atom.description}
-          </div>
-
-          {/* Badges */}
-          <div className="flex items-center gap-1.5 flex-wrap pt-1">
+        {/* Badges */}
+        <div className="flex items-center gap-1.5 flex-wrap pt-1">
+          <span
+            className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-md"
+            style={{ background: `${color}12`, color: `${color}90` }}
+          >
+            {atom.role}
+          </span>
+          {atom.interactions.map((t) => (
             <span
-              className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-md"
-              style={{ background: `${color}12`, color: `${color}90` }}
+              key={t}
+              className="text-[9px] font-mono text-white/15 bg-white/[0.03] px-1.5 py-0.5 rounded-md"
             >
-              {atom.role}
+              {t}
             </span>
-            {atom.interactions.map((t) => (
+          ))}
+          <span className="text-[8px] font-mono text-white/10 ml-auto capitalize">
+            {atom.level}
+          </span>
+        </div>
+
+        {/* Reverse association — used by */}
+        {usedBy.length > 0 && (
+          <div className="flex items-center gap-1.5 pt-1.5">
+            <span className="text-[9px] font-mono text-white/12">used by</span>
+            {usedBy.map((slug) => (
               <span
-                key={t}
-                className="text-[9px] font-mono text-white/15 bg-white/[0.03] px-1.5 py-0.5 rounded-md"
+                key={slug}
+                className="text-[9px] font-mono text-white/30 bg-white/[0.04] px-1.5 py-0.5 rounded-md hover:text-white/50 hover:bg-white/[0.06] transition-colors"
               >
-                {t}
+                {getComponentName(slug)}
               </span>
             ))}
-            <span className="text-[8px] font-mono text-white/10 ml-auto capitalize">
-              {atom.level}
-            </span>
           </div>
-        </div>
-      </Link>
+        )}
+      </div>
     </div>
   );
 }

@@ -11,6 +11,7 @@ export interface AtomMeta {
   role: AtomRole;
   interactions: AtomInteraction[];
   level: AtomLevel;
+  file?: string;       // Path relative to src/components/atoms/ (e.g. "surface/GlowBorder.tsx")
 }
 
 export const ROLE_COLORS: Record<AtomRole, string> = {

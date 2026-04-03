@@ -10,6 +10,7 @@ export const atomRegistry: AtomMeta[] = [
     role: "surface",
     interactions: ["hover"],
     level: "decorative",
+    file: "surface/GlowBorder.tsx",
   },
   {
     slug: "text-area",
@@ -20,6 +21,7 @@ export const atomRegistry: AtomMeta[] = [
     role: "input",
     interactions: ["input"],
     level: "primary",
+    file: "input/AutoTextarea.tsx",
   },
   {
     slug: "chip-button",
@@ -30,6 +32,7 @@ export const atomRegistry: AtomMeta[] = [
     role: "action",
     interactions: ["click"],
     level: "secondary",
+    file: "action/ToolbarButton.tsx",
   },
   {
     slug: "icon-button",
@@ -40,6 +43,7 @@ export const atomRegistry: AtomMeta[] = [
     role: "action",
     interactions: ["click"],
     level: "ghost",
+    file: "action/ToolbarButton.tsx",
   },
   {
     slug: "toggle-chip",
@@ -50,6 +54,7 @@ export const atomRegistry: AtomMeta[] = [
     role: "control",
     interactions: ["toggle"],
     level: "secondary",
+    file: "control/MicToggle.tsx",
   },
   {
     slug: "fab",
@@ -60,6 +65,7 @@ export const atomRegistry: AtomMeta[] = [
     role: "action",
     interactions: ["click"],
     level: "primary",
+    file: "action/SendButton.tsx",
   },
   {
     slug: "toolbar",
