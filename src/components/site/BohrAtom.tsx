@@ -33,15 +33,22 @@ export function BohrAtom() {
 
       {/* Nucleus */}
       <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full flex items-center justify-center"
         style={{
-          background: "radial-gradient(circle, rgba(124,92,252,0.2) 0%, rgba(124,92,252,0.05) 70%, transparent 100%)",
+          background: "radial-gradient(circle, rgba(124,92,252,0.3) 0%, rgba(124,92,252,0.1) 60%, transparent 100%)",
+          boxShadow: "0 0 40px rgba(124,92,252,0.15), 0 0 80px rgba(124,92,252,0.05)",
         }}
-        animate={{ scale: [1, 1.08, 1] }}
+        animate={{ scale: [1, 1.1, 1] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       >
-        <div className="w-4 h-4 rounded-full bg-white/10" />
+        <div className="w-6 h-6 rounded-full bg-white/15 flex items-center justify-center">
+          <div className="w-2 h-2 rounded-full bg-white/30" />
+        </div>
       </motion.div>
+      {/* Nucleus label */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-5 text-[8px] font-mono text-white/15 uppercase tracking-widest">
+        Lumen
+      </div>
 
       {/* Electrons */}
       {ELECTRONS.map((e) => {
