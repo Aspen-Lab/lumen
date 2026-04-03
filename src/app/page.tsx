@@ -9,6 +9,7 @@ import { ROLE_COLORS, type AtomRole } from "@/types/atom";
 import { PromptInput } from "@/components/library/action/PromptInput";
 import { TiltCard } from "@/components/site/TiltCard";
 import { CharacterUniverse } from "@/components/site/CharacterUniverse";
+import { BohrAtom } from "@/components/site/BohrAtom";
 import { ArrowRight } from "lucide-react";
 
 const previewMap: Record<string, React.ComponentType> = {
@@ -31,96 +32,110 @@ export default function HomePage() {
       {/* ── Hero ── */}
       <motion.div
         ref={heroRef}
-        className="relative pt-10 pb-16 min-h-[50vh] flex flex-col justify-center overflow-hidden rounded-2xl"
+        className="relative min-h-[60vh] overflow-hidden rounded-2xl"
         style={{ opacity: heroOpacity, y: heroY, scale: heroScale }}
       >
-        {/* Character Universe background */}
+        {/* Character Universe — fills hero, text + orbs push characters */}
         <div className="absolute inset-0 z-0">
           <CharacterUniverse />
         </div>
 
-        {/* Fade edges */}
-        <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-surface-0 to-transparent z-[1] pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-surface-0 to-transparent z-[1] pointer-events-none" />
+        {/* Edge fades */}
+        <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-surface-0 to-transparent z-[1] pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-surface-0 to-transparent z-[1] pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-surface-0 to-transparent z-[1] pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-surface-0 to-transparent z-[1] pointer-events-none" />
 
-        {/* Text */}
-        <div className="relative z-[1] space-y-6">
-          <motion.div
-            className="overflow-hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
-          >
-            <motion.h1
-              className="text-[56px] lg:text-[72px] font-bold text-white tracking-tight leading-none"
-              initial={{ y: 40 }}
-              animate={{ y: 0 }}
-              transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+        {/* Content — two columns */}
+        <div className="relative z-[2] flex items-center min-h-[60vh] px-8 lg:px-12 py-16">
+          {/* Left — text */}
+          <div className="flex-1 space-y-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6 }}
             >
-              Build AI
-              <br />
-              <span className="text-white/30">interfaces.</span>
-            </motion.h1>
-          </motion.div>
+              <motion.h1
+                className="text-[48px] lg:text-[64px] font-bold text-white tracking-tight leading-[0.95]"
+                initial={{ y: 30 }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                Build AI
+                <br />
+                <span className="text-white/25">interfaces.</span>
+              </motion.h1>
+            </motion.div>
 
-          <motion.p
-            className="text-lg text-white/25 max-w-md leading-relaxed"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            Components and atoms designed for reasoning,
-            decision, action, and output.
-          </motion.p>
-
-          {/* Quick stats */}
-          <motion.div
-            className="flex items-center gap-6 pt-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.4 }}
-          >
-            {[
-              { n: categories.reduce((s, c) => s + getComponentsByCategory(c.slug).length, 0), label: "Components" },
-              { n: atomRegistry.length, label: "Atoms" },
-              { n: Object.keys(ROLE_COLORS).length, label: "Roles" },
-            ].map((stat, i) => (
-              <div key={stat.label} className="flex items-baseline gap-1.5">
-                <motion.span
-                  className="text-xl font-bold font-mono text-white/60"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 + i * 0.1 }}
-                >
-                  {stat.n}
-                </motion.span>
-                <span className="text-[10px] font-mono text-white/15 uppercase tracking-widest">
-                  {stat.label}
-                </span>
-              </div>
-            ))}
-          </motion.div>
-
-          {/* CTA buttons */}
-          <motion.div
-            className="flex items-center gap-3 pt-4"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.4 }}
-          >
-            <Link
-              href="/components/action/prompt-input"
-              className="group flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.07] hover:bg-white/[0.12] text-sm font-medium text-white/70 hover:text-white transition-all"
+            <motion.p
+              className="text-base text-white/20 max-w-sm leading-relaxed"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
             >
-              Explore
-              <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-            <Link
-              href="/atoms"
-              className="px-5 py-2.5 rounded-xl text-sm font-medium text-white/25 hover:text-white/50 transition-colors"
+              Components and atoms designed for reasoning,
+              decision, action, and output.
+            </motion.p>
+
+            {/* Stats */}
+            <motion.div
+              className="flex items-center gap-5 pt-1"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.4 }}
             >
-              View Atoms
-            </Link>
+              {[
+                { n: categories.reduce((s, c) => s + getComponentsByCategory(c.slug).length, 0), label: "Components" },
+                { n: atomRegistry.length, label: "Atoms" },
+                { n: Object.keys(ROLE_COLORS).length, label: "Roles" },
+              ].map((stat, i) => (
+                <div key={stat.label} className="flex items-baseline gap-1.5">
+                  <motion.span
+                    className="text-lg font-bold font-mono text-white/50"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 + i * 0.1 }}
+                  >
+                    {stat.n}
+                  </motion.span>
+                  <span className="text-[9px] font-mono text-white/12 uppercase tracking-widest">
+                    {stat.label}
+                  </span>
+                </div>
+              ))}
+            </motion.div>
+
+            {/* CTA */}
+            <motion.div
+              className="flex items-center gap-3 pt-3"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7, duration: 0.4 }}
+            >
+              <Link
+                href="/components/action/prompt-input"
+                className="group flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.07] hover:bg-white/[0.12] text-sm font-medium text-white/70 hover:text-white transition-all"
+              >
+                Explore
+                <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+              <Link
+                href="/atoms"
+                className="px-5 py-2.5 rounded-xl text-sm font-medium text-white/25 hover:text-white/50 transition-colors"
+              >
+                View Atoms
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Right — Bohr Atom Model */}
+          <motion.div
+            className="hidden lg:flex items-center justify-center flex-shrink-0"
+            initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <BohrAtom />
           </motion.div>
         </div>
       </motion.div>

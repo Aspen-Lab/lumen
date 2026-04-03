@@ -101,7 +101,16 @@ export function CharacterUniverse() {
       }
     })();
 
-    // Atom orbs
+    // Ghost orbs — invisible, just push text away from UI elements
+    // Title area (left side, ~top 40%)
+    const ghostOrbs: Orb[] = [
+      { x: w * 0.25, y: h * 0.35, vx: 0, vy: 0, r: 80, name: "", color: "#ffffff" },
+      { x: w * 0.2, y: h * 0.55, vx: 0, vy: 0, r: 50, name: "", color: "#ffffff" },
+      // Bohr atom area (right side, center)
+      { x: w * 0.75, y: h * 0.5, vx: 0, vy: 0, r: 100, name: "", color: "#7C5CFC" },
+    ];
+
+    // Atom orbs — visible, moving
     const orbs: Orb[] = ATOM_ORBS.map((a) => ({
       x: Math.random() * w,
       y: Math.random() * h,
@@ -162,7 +171,15 @@ export function CharacterUniverse() {
       ctx.font = FONT;
 
       // Pre-compute which line ranges are near any orb
-      const orbLineRanges: { minLine: number; maxLine: number }[] = orbs.map((orb) => ({
+      // Combine ghost + visible orbs for text displacement
+      const allPushOrbs = [...ghostOrbs, ...orbs];
+      const allPushRGB = allPushOrbs.map((o) => ({
+        r: parseInt(o.color.slice(1, 3), 16) || 255,
+        g: parseInt(o.color.slice(3, 5), 16) || 255,
+        b: parseInt(o.color.slice(5, 7), 16) || 255,
+      }));
+
+      const orbLineRanges: { minLine: number; maxLine: number }[] = allPushOrbs.map((orb) => ({
         minLine: Math.floor((orb.y - PUSH_R - 10 + scrollOffset) / LINE_H) - 1,
         maxLine: Math.ceil((orb.y + PUSH_R + 10 + scrollOffset) / LINE_H) + 1,
       }));
@@ -178,9 +195,9 @@ export function CharacterUniverse() {
         const baseY = i * LINE_H - scrollOffset;
         if (baseY > h + 20 || baseY < -20) continue;
 
-        // Is this line near any orb?
+        // Is this line near any push orb?
         let nearOrb = false;
-        for (let oi = 0; oi < orbs.length; oi++) {
+        for (let oi = 0; oi < allPushOrbs.length; oi++) {
           if (i >= orbLineRanges[oi].minLine && i <= orbLineRanges[oi].maxLine) {
             nearOrb = true;
             break;
@@ -202,8 +219,8 @@ export function CharacterUniverse() {
           let alpha = 0.04;
           let cr = 255, cg = 255, cb = 255;
 
-          for (let oi = 0; oi < orbs.length; oi++) {
-            const orb = orbs[oi];
+          for (let oi = 0; oi < allPushOrbs.length; oi++) {
+            const orb = allPushOrbs[oi];
             const dx = cx - orb.x;
             const dy = cy - orb.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
@@ -215,9 +232,9 @@ export function CharacterUniverse() {
               cy += dy * nd * push;
               alpha = Math.max(alpha, 0.04 + s * 0.14);
               const m = s * 0.8;
-              cr = Math.round(cr * (1 - m) + orbRGB[oi].r * m);
-              cg = Math.round(cg * (1 - m) + orbRGB[oi].g * m);
-              cb = Math.round(cb * (1 - m) + orbRGB[oi].b * m);
+              cr = Math.round(cr * (1 - m) + allPushRGB[oi].r * m);
+              cg = Math.round(cg * (1 - m) + allPushRGB[oi].g * m);
+              cb = Math.round(cb * (1 - m) + allPushRGB[oi].b * m);
             }
           }
 
