@@ -1,4 +1,9 @@
-export type ComponentCategory = "action";
+export type ComponentCategory =
+  | "action"
+  | "reasoning"
+  | "decision"
+  | "output"
+  | "motion";
 
 export type ComponentTag =
   | "LLM"

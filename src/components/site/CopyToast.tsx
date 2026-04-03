@@ -28,7 +28,7 @@ export function CopyToast({ show, onClose }: CopyToastProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 8 }}
           transition={{ duration: 0.2 }}
-          className="fixed bottom-6 right-6 z-50 rounded-xl bg-[#12121A] shadow-2xl shadow-black/40 p-4 max-w-sm"
+          className="fixed bottom-6 right-6 z-50 rounded-xl bg-surface-1 shadow-2xl shadow-black/40 p-4 max-w-sm"
         >
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-lg bg-white/[0.06] flex items-center justify-center shrink-0">

@@ -14,11 +14,13 @@ type LazyModule = {
   mobile: () => Promise<{ [key: string]: React.ComponentType }>;
   controls: () => Promise<{ [key: string]: ControlDefinition[] }>;
   code: () => Promise<{ [key: string]: string | ((props: Record<string, unknown>) => string) }>;
+  blueprint?: () => Promise<{ [key: string]: BlueprintNode[] }>;
   exports: {
     desktop: string;
     mobile: string;
     controls: string;
     code: string;
+    blueprint?: string;
   };
 };
 
@@ -28,7 +30,8 @@ const lazyMap: Record<string, LazyModule> = {
     mobile: () => import("@/components/library/action/PromptInput/mobile"),
     controls: () => import("@/components/library/action/PromptInput/controls"),
     code: () => import("@/components/library/action/PromptInput/code"),
-    exports: { desktop: "PromptInput", mobile: "PromptInputMobile", controls: "promptInputControls", code: "generatePromptInputCode" },
+    blueprint: () => import("@/components/library/action/PromptInput/blueprint"),
+    exports: { desktop: "PromptInput", mobile: "PromptInputMobile", controls: "promptInputControls", code: "generatePromptInputCode", blueprint: "promptInputBlueprint" },
   },
 };
 
@@ -47,15 +50,15 @@ export async function loadComponent(slug: string): Promise<ComponentEntry | null
     lazy.code(),
   ]);
 
-  // Try loading blueprint (optional)
+  // Try loading blueprint (optional, data-driven from lazyMap)
   let blueprint: BlueprintNode[] | undefined;
-  try {
-    const bpMod = await import(`@/components/library/action/PromptInput/blueprint`);
-    if (slug === "prompt-input" && bpMod.promptInputBlueprint) {
-      blueprint = bpMod.promptInputBlueprint;
+  if (lazy.blueprint && lazy.exports.blueprint) {
+    try {
+      const bpMod = await lazy.blueprint();
+      blueprint = (bpMod as Record<string, BlueprintNode[]>)[lazy.exports.blueprint];
+    } catch {
+      // No blueprint for this component
     }
-  } catch {
-    // No blueprint for this component
   }
 
   const entry: ComponentEntry = {

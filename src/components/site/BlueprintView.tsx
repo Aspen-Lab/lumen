@@ -12,13 +12,14 @@ interface BlueprintViewProps {
   component: React.ReactNode;
 }
 
-const W = 1000;
-const H = 700;
+const W = 900;
+const H = 680;
 const CX = W / 2;
 const CY = H / 2;
 
-// Component bounding box
-const COMP_W = 260;
+// Actual rendered size of center component at scale-75
+// PromptInput: max-w-[640px] → 640*0.75 = 480, height ~80*0.75 ≈ 60
+const COMP_W = 480;
 const COMP_H = 60;
 
 const SLOTS: Record<string, {
@@ -28,12 +29,12 @@ const SLOTS: Record<string, {
   portX: number;
   portY: number;
 }> = {
-  "top-left":     { x: 160, y: 130, side: "right", portX: CX - COMP_W / 2 + 30,  portY: CY - COMP_H / 2 },
-  "top-right":    { x: 840, y: 130, side: "left",  portX: CX + COMP_W / 2 - 30,  portY: CY - COMP_H / 2 },
-  "left":         { x: 110, y: CY,  side: "right", portX: CX - COMP_W / 2,        portY: CY },
-  "right":        { x: 890, y: CY,  side: "left",  portX: CX + COMP_W / 2,        portY: CY },
-  "bottom-left":  { x: 160, y: 570, side: "right", portX: CX - COMP_W / 2 + 30,  portY: CY + COMP_H / 2 },
-  "bottom-right": { x: 840, y: 570, side: "left",  portX: CX + COMP_W / 2 - 30,  portY: CY + COMP_H / 2 },
+  "top-left":     { x: 120, y: 110, side: "right", portX: CX - COMP_W / 2 - 10,  portY: CY - COMP_H / 2 - 10 },
+  "top-right":    { x: 780, y: 110, side: "left",  portX: CX + COMP_W / 2 + 10,  portY: CY - COMP_H / 2 - 10 },
+  "left":         { x: 120, y: CY,  side: "right", portX: CX - COMP_W / 2 - 10,  portY: CY },
+  "right":        { x: 780, y: CY,  side: "left",  portX: CX + COMP_W / 2 + 10,  portY: CY },
+  "bottom-left":  { x: 120, y: 570, side: "right", portX: CX - COMP_W / 2 - 10,  portY: CY + COMP_H / 2 + 10 },
+  "bottom-right": { x: 780, y: 570, side: "left",  portX: CX + COMP_W / 2 + 10,  portY: CY + COMP_H / 2 + 10 },
 };
 
 export function BlueprintView({ nodes, component }: BlueprintViewProps) {
@@ -59,10 +60,14 @@ export function BlueprintView({ nodes, component }: BlueprintViewProps) {
         {nodes.map((node, i) => {
           const slot = SLOTS[node.position];
           if (!slot) return null;
+          // Node card is 200px wide. Connect from the correct edge.
+          const edgeX = slot.side === "right"
+            ? slot.x + 100  // right edge of left-side node
+            : slot.x - 100; // left edge of right-side node
           return (
             <BlueprintConnector
               key={node.id}
-              fromX={slot.x}
+              fromX={edgeX}
               fromY={slot.y}
               toX={slot.portX}
               toY={slot.portY}

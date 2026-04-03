@@ -87,8 +87,8 @@ export function CodeHighlight({ code, lang = "tsx" }: CodeHighlightProps) {
               const isComment = trimmed.startsWith("//") || trimmed.startsWith("/*");
               const isImport = trimmed.startsWith("import ");
               const isKeyword = /^(export|const|function|return|if|else)/.test(trimmed);
-              let color = "rgba(255,255,255,0.12)";
-              if (isComment) color = "rgba(255,255,255,0.06)";
+              let color = "var(--white-12)";
+              if (isComment) color = "var(--white-5)";
               if (isImport) color = "rgba(100,160,255,0.15)";
               if (isKeyword) color = "rgba(200,120,255,0.12)";
 

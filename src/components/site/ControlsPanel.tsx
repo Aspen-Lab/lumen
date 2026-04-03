@@ -395,7 +395,7 @@ function ColorPicker({
             </div>
 
             {/* Presets + Recent */}
-            <div className="mt-3 pt-2.5" style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+            <div className="mt-3 pt-2.5" style={{ borderTop: "1px solid var(--white-5)" }}>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[9px] font-mono text-white/15 uppercase tracking-widest">Presets</span>
                 <span className="text-[9px] font-mono text-white/10">{PRESET_COLORS.length}</span>
@@ -413,7 +413,7 @@ function ColorPicker({
             </div>
 
             {recentColors.length > 0 && (
-              <div className="mt-2.5 pt-2.5" style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+              <div className="mt-2.5 pt-2.5" style={{ borderTop: "1px solid var(--white-5)" }}>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[9px] font-mono text-white/15 uppercase tracking-widest">Recent</span>
                   <span className="text-[9px] font-mono text-white/10">{recentColors.length}</span>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 
 interface BlueprintCanvasProps {
   children: React.ReactNode;
@@ -11,9 +11,22 @@ interface BlueprintCanvasProps {
 export function BlueprintCanvas({ children, width, height }: BlueprintCanvasProps) {
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [baseScale, setBaseScale] = useState(1);
   const dragging = useRef(false);
   const lastPos = useRef({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Responsive: scale down canvas when container is narrower than canvas width
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const containerW = entry.contentRect.width;
+      setBaseScale(containerW < width ? containerW / width : 1);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [width]);
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     // Don't hijack clicks on interactive nodes
@@ -49,8 +62,8 @@ export function BlueprintCanvas({ children, width, height }: BlueprintCanvasProp
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-[600px] overflow-hidden"
-      style={{ cursor: dragging.current ? "grabbing" : "grab" }}
+      className="relative w-full overflow-hidden"
+      style={{ height: Math.round(680 * baseScale), cursor: dragging.current ? "grabbing" : "grab" }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -65,7 +78,7 @@ export function BlueprintCanvas({ children, width, height }: BlueprintCanvasProp
             linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
             linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)
           `,
-          backgroundSize: `${32 * zoom}px ${32 * zoom}px`,
+          backgroundSize: `${32 * zoom * baseScale}px ${32 * zoom * baseScale}px`,
           backgroundPosition: `${pan.x}px ${pan.y}px`,
         }}
       />
@@ -78,7 +91,7 @@ export function BlueprintCanvas({ children, width, height }: BlueprintCanvasProp
           height,
           left: `calc(50% - ${width / 2}px)`,
           top: `calc(50% - ${height / 2}px)`,
-          transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+          transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom * baseScale})`,
           transformOrigin: "center center",
         }}
       >
@@ -95,7 +108,7 @@ export function BlueprintCanvas({ children, width, height }: BlueprintCanvasProp
             −
           </button>
           <span className="px-2 py-1 text-[9px] font-mono text-white/15 min-w-[40px] text-center">
-            {Math.round(zoom * 100)}%
+            {Math.round(zoom * baseScale * 100)}%
           </span>
           <button
             onClick={() => setZoom((z) => Math.min(1.5, z + 0.1))}

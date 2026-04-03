@@ -63,7 +63,7 @@ export function GlowBorder({
       />
 
       {/* Content sits above all glow layers */}
-      <div className="relative" style={{ borderRadius }}>
+      <div className="relative" style={{ borderRadius: radius }}>
         {children}
       </div>
     </div>

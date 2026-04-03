@@ -1,16 +1,8 @@
 import { ComponentMeta } from "@/types/component-meta";
+import { promptInputMeta } from "@/components/library/action/PromptInput/meta";
 
 export const componentRegistry: ComponentMeta[] = [
-  {
-    slug: "prompt-input",
-    name: "PromptInput",
-    description: "AI prompt input with animated gradient glow border",
-    category: "action",
-    tags: ["LLM", "Agent"],
-    version: "0.1.0",
-    author: "Aspen",
-    status: "stable",
-  },
+  promptInputMeta,
 ];
 
 export function getComponentsByCategory(category: string) {
@@ -23,4 +15,8 @@ export function getComponentBySlug(slug: string) {
 
 export const categories = [
   { slug: "action", name: "Action", icon: "Zap" },
+  { slug: "reasoning", name: "Reasoning", icon: "Brain" },
+  { slug: "decision", name: "Decision", icon: "GitBranch" },
+  { slug: "output", name: "Output", icon: "Layers" },
+  { slug: "motion", name: "Motion", icon: "Sparkles" },
 ] as const;

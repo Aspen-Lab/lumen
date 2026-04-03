@@ -1,0 +1,19 @@
+# PromptInput
+
+## When to use
+
+Use PromptInput when your AI product needs a primary text entry point for user prompts. It suits chat interfaces, search-driven AI tools, and agent command panels where the input itself needs to signal readiness and activity.
+
+## Why this design
+
+- **Glow border as state feedback** — The animated gradient border communicates focus state without relying on a static outline. Users intuitively understand that the glowing input is "listening."
+- **Two-layer controls** — Visual/motion props (glow speed, intensity, border radius) are separated from product-semantic props (show/hide toolbar actions). This lets designers tune aesthetics while product teams configure functionality independently.
+- **Composable parts** — The component is decomposed into GlowBorder, AutoTextarea, MicToggle, SendButton, and ToolbarButton. Each part can be understood, tested, and styled in isolation.
+- **Mobile is not just smaller** — The mobile variant changes interaction density (compact toolbar, smaller touch targets) and animation rhythm (simplified glow layers), rather than just scaling down the desktop layout.
+
+## Design decisions
+
+- **Conic gradient rotation** — A rotating conic gradient creates directional light movement that feels organic, unlike a pulsing glow which can feel mechanical.
+- **3-layer glow compositing** — Static base + rotating sweep + blur halo. Each layer serves a purpose: base provides consistent border visibility, sweep adds motion, halo adds ambient depth.
+- **Auto-sizing textarea** — The input grows with content up to a max height, then scrolls. This prevents layout jumps while keeping the component compact for short prompts.
+- **Brand preset system** — Presets (ChatGPT, Claude, Gemini, etc.) demonstrate how the same structural component adapts to different product identities through color alone.

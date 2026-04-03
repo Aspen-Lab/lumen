@@ -369,8 +369,7 @@ export default function ComponentPage() {
               </span>
             </div>
           </motion.div>
-        ) : null}
-        {view === "code" && (
+        ) : view === "code" ? (
           <motion.div
             key="code"
             initial={{ opacity: 0 }}
@@ -380,8 +379,7 @@ export default function ComponentPage() {
           >
             <CodeHighlight code={getSourceCode(resolvedCode)} />
           </motion.div>
-        )}
-        {view === "blueprint" && entry.blueprint && (
+        ) : view === "blueprint" && entry.blueprint ? (
           <motion.div
             key="blueprint"
             initial={{ opacity: 0 }}
@@ -394,7 +392,7 @@ export default function ComponentPage() {
               component={<Component {...controlValues} />}
             />
           </motion.div>
-        )}
+        ) : null}
         </AnimatePresence>
       </div>
 
