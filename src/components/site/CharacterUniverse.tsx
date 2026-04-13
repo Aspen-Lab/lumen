@@ -8,9 +8,9 @@ export function CharacterUniverse() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const canvas = canvasRef.current!;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d")!;
     if (!ctx) return;
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -49,6 +49,7 @@ export function CharacterUniverse() {
     // Load Pretext for better line breaking
     (async () => {
       try {
+        // @ts-ignore dynamic ESM import
         const pretext = await import(/* webpackIgnore: true */ "https://esm.sh/@chenglou/pretext@0.18.4");
         const prepared = pretext.prepare(CODE_TEXT, FONT);
         const result = pretext.layout(prepared, w - 40, LINE_H);
