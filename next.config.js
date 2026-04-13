@@ -1,6 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  serverExternalPackages: ["@chenglou/pretext"],
-};
+const nextConfig = {};
 
 module.exports = nextConfig;
